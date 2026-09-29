@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <!-- 스마트폰에 최적화된 뷰포트 설정 (확대 방지) -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>우리의 공간 ♡</title>
+    
+    <!-- 폰트 및 아이콘 -->
+    <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Jua&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'pastel-pink': '#ffe4e8',
+                        'main-pink': '#ffb3c6',
+                        'deep-pink': '#ff8fab',
+                        'text-dark': '#5c4d50',
+                        'text-light': '#8a7d80'
+                    },
+                    fontFamily: {
+                        'dodum': ['"Gowun Dodum"', 'sans-serif'],
+                        'jua': ['"Jua"', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Gowun Dodum', sans-serif;
+            background-color: #ffe4e8; /* pastel-pink */
+            color: #5c4d50;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* 스크롤바 숨기기 (모바일 앱 느낌) */
+        ::-webkit-scrollbar { display: none; }
+        
+        .cute-shadow {
+            box-shadow: 0 4px 15px rgba(255, 143, 171, 0.2);
+        }
+        
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        /* 좌측 슬라이딩 메뉴 애니메이션 */
+        #sidebar {
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateX(-100%);
+            z-index: 50;
+        }
+        #sidebar.open {
+            transform: translateX(0);
+        }
+        #sidebar-overlay {
+            transition: opacity 0.3s ease;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 40;
+        }
+        #sidebar-overlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* 사진 게시판 균일한 썸네일 그리드 */
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            padding: 12px;
+        }
+        .photo-item {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            aspect-ratio: 1 / 1;
+        }
+        .photo-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* 커스텀 로더 */
+        .heart-loader {
+            display: inline-block;
+            position: relative;
+            width: 80px;
+            height: 80px;
+            transform: rotate(45deg);
+            transform-origin: 40px 40px;
+        }
+        .heart-loader div {
+            top: 32px;
+            left: 32px;
+            position: absolute;
+            width: 32px;
+            height: 32px;
+            background: #ff8fab;
+            animation: heart-loader 1.2s infinite cubic-bezier(0.215, 0.61, 0.355, 1);
+        }
+        .heart-loader div:after, .heart-loader div:before {
+            content: " ";
+            position: absolute;
+            display: block;
+            width: 32px;
+            height: 32px;
+            background: #ff8fab;
+        }
+        .heart-loader div:before { left: -24px; border-radius: 50% 0 0 50%; }
+        .heart-loader div:after { top: -24px; border-radius: 50% 50% 0 0; }
+        @keyframes heart-loader {
+            0% { transform: scale(0.95); }
+            5% { transform: scale(1.1); }
+            39% { transform: scale(0.85); }
+            45% { transform: scale(1); }
+            60% { transform: scale(0.95); }
+            100% { transform: scale(0.9); }
+        }
+
+        .view-section { display: none; padding-bottom: 80px; }
+        .view-section.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        input, textarea, select {
+            outline: none;
+            border: 2px solid #ffe4e8;
+            border-radius: 12px;
+            padding: 10px;
+            width: 100%;
+            transition: border-color 0.2s;
+        }
+        input:focus, textarea:focus { border-color: #ffb3c6; }
+        button { user-select: none; }
+    </style>
+</head>
+<body>
+
+    <!-- PWA 동적 매니페스트 주입 영역 -->
+    <script>
+        const manifest = {
+            name: "우리의 공간",
+            short_name: "우리의 공간",
+            start_url: ".",
+            display: "standalone",
+            background_color: "#ffe4e8",
+            theme_color: "#ffb3c6",
+            icons: [{
+                src: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2ZmZTRlOCIvPjxwYXRoIGQ9Ik01MCA4NS41Qy0xMCA1MCAyMCAxMCA1MCA0MGMzMC0zMCA2MCA0MCAwIDQ1LjV6IiBmaWxsPSIjZmY4ZmFiIi8+PC9zdmc+",
+                sizes: "192x192",
+                type: "image/svg+xml"
+            }]
+        };
+        const manifestBlob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
+        const manifestUrl = URL.createObjectURL(manifestBlob);
+        const link = document.createElement('link');
+        link.rel = 'manifest';
+        link.href = manifestUrl;
+        document.head.appendChild(link);
+
+        // 브라우저 보안 정책에 따라 blob: URL로는 Service Worker를 등록할 수 없습니다. (미리보기 환경 제한)
+        // 실제 프로덕션(서버) 환경에서는 아래 코드를 주석 해제하고 별도의 'sw.js' 파일을 루트에 만들어 등록하세요.
+        /*
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js').catch(console.error);
+        }
+        */
+        console.log("미리보기 환경에서는 Service Worker 등록이 생략되었습니다. (PWA 전체 화면 및 설치 기능은 실제 서버 환경에서 동작합니다.)");
+    </script>
+
+    <!-- 전역 로더 -->
+    <div id="app-loader" class="fixed inset-0 bg-pastel-pink z-[100] flex flex-col items-center justify-center">
+        <div class="heart-loader"><div></div></div>
+        <p class="mt-8 text-main-pink font-jua text-xl">우리의 공간 준비중...</p>
+    </div>
+
+    <!-- 커스텀 모달 -->
+    <div id="custom-modal" class="fixed inset-0 bg-black/50 z-[90] hidden flex items-center justify-center px-4 transition-opacity">
+        <div class="bg-white rounded-3xl p-6 w-full max-w-sm cute-shadow text-center">
+            <h3 id="modal-title" class="text-xl font-jua text-deep-pink mb-2">알림</h3>
+            <p id="modal-message" class="text-text-dark mb-6 text-sm"></p>
+            <div id="modal-buttons" class="flex gap-2 justify-center">
+                <button id="modal-btn-cancel" class="hidden px-4 py-2 rounded-xl bg-gray-200 text-gray-700 font-bold w-1/2">취소</button>
+                <button id="modal-btn-confirm" class="px-4 py-2 rounded-xl bg-main-pink text-white font-bold w-1/2">확인</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 사진 상세 및 댓글 모달 -->
+    <div id="photo-modal" class="fixed inset-0 bg-black/90 z-[95] hidden flex-col transition-opacity">
+        <div class="flex justify-between items-center p-4">
+            <div class="text-white font-jua text-lg">추억 상세보기</div>
+            <button id="btn-close-photo-modal" class="text-white text-2xl px-2 py-1"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="flex-1 overflow-y-auto pb-4 flex flex-col">
+            <div class="w-full flex justify-center items-center bg-black min-h-[40vh] max-h-[60vh] overflow-hidden">
+                <img id="photo-modal-img" src="" class="w-full h-full object-contain">
+            </div>
+            <div class="bg-white rounded-t-3xl mt-[-20px] relative p-5 flex-1 flex flex-col">
+                <h3 class="font-jua text-deep-pink text-lg mb-3">댓글</h3>
+                <div id="photo-modal-comments" class="space-y-2 mb-4 overflow-y-auto flex-1 max-h-[30vh]">
+                    <!-- JS로 렌더링 -->
+                </div>
+                <div class="flex gap-2 border-t pt-3 border-gray-100 shrink-0">
+                    <input type="text" id="photo-comment-input" placeholder="댓글 달기..." class="text-sm py-2 px-3 flex-1 border-gray-200">
+                    <button id="btn-add-photo-comment" class="bg-main-pink text-white text-sm px-4 rounded-xl whitespace-nowrap font-bold shadow-sm">등록</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 로그인 화면 -->
+    <div id="login-view" class="fixed inset-0 bg-white z-[80] hidden flex-col">
+        <!-- 상단 사진 영역 -->
+        <div class="relative flex-1 bg-pastel-pink min-h-[50%]">
+            <img id="login-main-img" src="https://placehold.co/1080x1080/ffe4e8/ffb3c6?text=Photo" class="w-full h-full object-cover">
+            <label class="absolute bottom-6 right-4 bg-white/80 backdrop-blur-sm text-main-pink w-12 h-12 rounded-full flex items-center justify-center cute-shadow cursor-pointer hover:bg-white transition-colors">
+                <i class="fas fa-camera text-xl"></i>
+                <input type="file" id="input-login-img" accept="image/*" class="hidden">
+            </label>
+        </div>
+        
+        <!-- 하단 로그인 폼 -->
+        <div class="bg-white rounded-t-3xl -mt-6 relative z-10 p-6 pb-12 shadow-[0_-10px_20px_rgba(0,0,0,0.05)] flex flex-col justify-end shrink-0">
+            <div class="text-center mb-6">
+                <h1 class="text-3xl font-jua text-deep-pink mb-1">우리의 공간</h1>
+                <p class="text-text-light text-sm">둘만의 비밀스러운 공간</p>
+            </div>
+
+            <!-- 역할 선택 탭 -->
+            <div class="flex bg-pastel-pink/30 rounded-xl mb-6 p-1 cute-shadow">
+                <button id="tab-male" class="w-1/2 py-2 rounded-lg font-bold text-main-pink bg-pastel-pink transition-colors">남자친구</button>
+                <button id="tab-female" class="w-1/2 py-2 rounded-lg font-bold text-text-light transition-colors">여자친구</button>
+            </div>
+
+            <div id="login-form-container">
+                <p id="login-status-msg" class="text-sm text-main-pink mb-2 text-center h-5"></p>
+                <input type="text" id="login-id" placeholder="아이디 입력 (고정)" class="mb-3 bg-gray-50 text-text-light outline-none" readonly>
+                <input type="password" id="login-password" placeholder="비밀번호 입력" class="mb-6">
+                <button id="btn-login" class="w-full bg-main-pink hover:bg-deep-pink text-white font-bold py-3.5 rounded-xl transition-colors shadow-md text-lg">
+                    입장하기
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 메인 앱 컨테이너 -->
+    <div id="main-app" class="hidden h-screen flex flex-col">
+        <!-- 헤더 -->
+        <header class="fixed top-0 left-0 right-0 h-14 glass-panel z-30 flex items-center justify-between px-4">
+            <button id="btn-menu" class="text-deep-pink text-2xl p-2"><i class="fas fa-bars"></i></button>
+            <h1 id="header-title" class="font-jua text-xl text-deep-pink">우리의 홈</h1>
+            <div class="w-8"></div> <!-- 밸런스를 위한 빈 공간 -->
+        </header>
+
+        <!-- 사이드바 -->
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black/40"></div>
+        <nav id="sidebar" class="fixed top-0 left-0 bottom-0 w-64 bg-white shadow-2xl flex flex-col">
+            <div class="bg-pastel-pink p-6 text-center rounded-br-3xl">
+                <div class="w-20 h-20 mx-auto bg-white rounded-full mb-3 flex items-center justify-center overflow-hidden border-4 border-white cute-shadow">
+                    <img id="menu-profile-pic" src="https://placehold.co/150x150/ffb3c6/ffffff?text=♡" class="w-full h-full object-cover">
+                </div>
+                <h2 id="menu-nickname" class="font-jua text-lg text-deep-pink">닉네임</h2>
+                <p id="menu-role" class="text-xs text-text-light mt-1"></p>
+            </div>
+            <div class="flex-1 overflow-y-auto py-4">
+                <button class="nav-btn w-full text-left px-6 py-3 text-text-dark hover:bg-pastel-pink/50 transition-colors" data-target="home">
+                    <i class="fas fa-home w-6 text-main-pink text-center mr-2"></i> 홈 화면
+                </button>
+                <button class="nav-btn w-full text-left px-6 py-3 text-text-dark hover:bg-pastel-pink/50 transition-colors" data-target="text-board">
+                    <i class="fas fa-pen-nib w-6 text-main-pink text-center mr-2"></i> 이야기 공간
+                </button>
+                <button class="nav-btn w-full text-left px-6 py-3 text-text-dark hover:bg-pastel-pink/50 transition-colors" data-target="photo-board">
+                    <i class="fas fa-image w-6 text-main-pink text-center mr-2"></i> 사진 추억
+                </button>
+                <div class="my-2 border-t border-gray-100"></div>
+                <button class="nav-btn w-full text-left px-6 py-3 text-text-dark hover:bg-pastel-pink/50 transition-colors" data-target="settings">
+                    <i class="fas fa-cog w-6 text-main-pink text-center mr-2"></i> 설정
+                </button>
+            </div>
+            <div class="p-4 border-t border-gray-100">
+                <button id="btn-logout" class="w-full py-2 text-sm text-text-light hover:text-deep-pink transition-colors">로그아웃</button>
+            </div>
+        </nav>
+
+        <!-- 메인 콘텐츠 영역 -->
+        <main class="flex-1 mt-14 relative h-full overflow-y-auto">
+            
+            <!-- 1. 홈 뷰 -->
+            <section id="view-home" class="view-section active h-full relative">
+                <div id="home-bg-container" class="absolute inset-0 bg-cover bg-center z-0 transition-all duration-500" style="background-image: url('https://placehold.co/1080x1920/ffe4e8/ffb3c6?text=Upload+Background');">
+                    <div class="absolute inset-0 bg-white/30 backdrop-blur-[2px]"></div>
+                </div>
+                <div class="relative z-10 flex flex-col items-center justify-center h-full pt-10 pb-20 px-4">
+                    <div class="glass-panel p-8 rounded-3xl text-center cute-shadow w-full max-w-sm">
+                        <h2 class="text-lg text-text-dark mb-2">우리가 함께한 지</h2>
+                        <div class="font-jua text-5xl text-deep-pink mb-4 drop-shadow-md">
+                            <span id="dday-count">D+0</span>
+                        </div>
+                        <p class="text-sm text-text-light" id="dday-date">YYYY.MM.DD 시작</p>
+                    </div>
+                    
+                    <div class="absolute bottom-6 right-6">
+                        <label class="bg-white/80 backdrop-blur-sm text-main-pink w-12 h-12 rounded-full flex items-center justify-center cute-shadow cursor-pointer hover:bg-white transition-colors">
+                            <i class="fas fa-camera text-xl"></i>
+                            <input type="file" id="input-home-bg" accept="image/*" class="hidden">
+                        </label>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. 설정 뷰 -->
+            <section id="view-settings" class="view-section p-4">
+                <h2 class="font-jua text-2xl text-deep-pink mb-4 ml-2"><i class="fas fa-cog mr-2"></i>우리의 정보 설정</h2>
+                
+                <div class="bg-white rounded-3xl p-5 cute-shadow mb-6">
+                    <h3 class="font-bold text-main-pink border-b border-pastel-pink pb-2 mb-4">내 정보 수정</h3>
+                    
+                    <div class="flex flex-col items-center mb-6">
+                        <div class="relative w-24 h-24 mb-2">
+                            <img id="setting-profile-pic" src="" class="w-full h-full rounded-full object-cover border-2 border-main-pink shadow-md">
+                            <label class="absolute bottom-0 right-0 bg-deep-pink text-white w-8 h-8 rounded-full flex items-center justify-center border-2 border-white cursor-pointer shadow-sm">
+                                <i class="fas fa-camera text-sm"></i>
+                                <input type="file" id="input-profile-pic" accept="image/*" class="hidden">
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold text-text-light mb-1 ml-1">닉네임</label>
+                            <input type="text" id="setting-nickname" placeholder="예: 사랑둥이">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-text-light mb-1 ml-1">생년월일</label>
+                            <input type="date" id="setting-birthdate">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-text-light mb-1 ml-1">비밀번호 변경</label>
+                            <input type="password" id="setting-password" placeholder="새 비밀번호 입력">
+                        </div>
+                        <button id="btn-save-my-info" class="w-full bg-main-pink text-white font-bold py-3 rounded-xl mt-2 shadow-md active:bg-deep-pink">
+                            내 정보 저장하기
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-3xl p-5 cute-shadow">
+                    <h3 class="font-bold text-main-pink border-b border-pastel-pink pb-2 mb-4">커플 정보 설정</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold text-text-light mb-1 ml-1">우리가 만난 날 (D-day 기준)</label>
+                            <input type="date" id="setting-dday">
+                        </div>
+                        <button id="btn-save-couple-info" class="w-full bg-white border-2 border-main-pink text-main-pink font-bold py-3 rounded-xl shadow-sm active:bg-pastel-pink">
+                            커플 정보 저장하기
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. 텍스트 게시판 뷰 -->
+            <section id="view-text-board" class="view-section p-4">
+                <div class="flex justify-between items-end mb-4 ml-2">
+                    <h2 class="font-jua text-2xl text-deep-pink"><i class="fas fa-book-heart mr-2"></i>우리의 일기장</h2>
+                </div>
+                
+                <!-- 글쓰기 폼 -->
+                <div class="bg-white rounded-2xl p-4 cute-shadow mb-6">
+                    <input type="text" id="post-input-title" placeholder="제목을 적어주세요" class="mb-2 text-sm font-bold bg-gray-50 border-gray-100 focus:bg-white">
+                    <textarea id="post-input-text" rows="3" placeholder="오늘 무슨 일이 있었나요?" class="mb-2 text-sm resize-none"></textarea>
+                    <div class="flex justify-end">
+                        <button id="btn-submit-post" class="bg-deep-pink text-white px-4 py-2 rounded-xl text-sm font-bold shadow-md">글 남기기</button>
+                    </div>
+                </div>
+
+                <!-- 글 목록 (동적 렌더링) -->
+                <div id="post-list" class="space-y-4">
+                    <!-- JS에서 렌더링됨 -->
+                </div>
+            </section>
+
+            <!-- 4. 사진 게시판 뷰 -->
+            <section id="view-photo-board" class="view-section p-2 relative">
+                <div class="px-2 pt-2 flex justify-between items-center mb-2">
+                    <h2 class="font-jua text-2xl text-deep-pink ml-2"><i class="fas fa-camera-retro mr-2"></i>추억 앨범</h2>
+                </div>
+                
+                <!-- 사진 그리드 -->
+                <div id="photo-grid" class="photo-grid">
+                    <!-- JS에서 렌더링됨 -->
+                </div>
+
+                <!-- 사진 업로드 플로팅 버튼 -->
+                <label class="fixed bottom-6 right-6 bg-deep-pink text-white w-14 h-14 rounded-full flex items-center justify-center cute-shadow cursor-pointer hover:bg-main-pink transition-colors z-20">
+                    <i class="fas fa-plus text-2xl"></i>
+                    <input type="file" id="input-upload-photo" accept="image/*" class="hidden">
+                </label>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // 환경 변수 처리
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-couple-app-123';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+            // 더미 컨피그 (실제 환경에서는 __firebase_config가 주입됨)
+            apiKey: "dummy-key", authDomain: "dummy.firebaseapp.com", projectId: "dummy-project"
+        };
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        let app, db, auth;
+        try {
+            app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+        } catch (e) {
+            console.error("Firebase Init Error:", e);
+        }
+
+        // 상태 관리
+        let currentRole = null; // 'male' or 'female'
+        let currentUserData = null;
+        let coupleData = {};
+        let allUsersData = { male: null, female: null };
+        let unsubscribes = [];
+        let currentPhotosList = []; // 추가: 현재 사진 리스트 저장용
+        let currentPhotoModalId = null; // 추가: 열려있는 사진 모달 ID
+
+        // DOM 요소
+        const UI = {
+            loader: document.getElementById('app-loader'),
+            loginView: document.getElementById('login-view'),
+            mainApp: document.getElementById('main-app'),
+            sidebar: document.getElementById('sidebar'),
+            sidebarOverlay: document.getElementById('sidebar-overlay'),
+            views: document.querySelectorAll('.view-section'),
+            navBtns: document.querySelectorAll('.nav-btn'),
+            headerTitle: document.getElementById('header-title'),
+            tabs: { male: document.getElementById('tab-male'), female: document.getElementById('tab-female') }
+        };
+
+        // 선택된 로그인 탭 상태
+        let selectedLoginRole = 'male'; 
+
+        const Utils = {
+            showModal: (title, message, isConfirm = false, onConfirm = null) => {
+                document.getElementById('modal-title').innerText = title;
+                document.getElementById('modal-message').innerText = message;
+                const modal = document.getElementById('custom-modal');
+                const btnCancel = document.getElementById('modal-btn-cancel');
+                const btnConfirm = document.getElementById('modal-btn-confirm');
+                
+                modal.classList.remove('hidden');
+                
+                if (isConfirm) {
+                    btnCancel.classList.remove('hidden');
+                } else {
+                    btnCancel.classList.add('hidden');
+                }
+
+                const close = () => modal.classList.add('hidden');
+                
+                btnConfirm.onclick = () => { close(); if(onConfirm) onConfirm(); };
+                btnCancel.onclick = () => close();
+            },
+            
+            showView: (targetId, title) => {
+                UI.views.forEach(v => v.classList.remove('active'));
+                document.getElementById('view-' + targetId).classList.add('active');
+                UI.headerTitle.innerText = title;
+                UI.sidebar.classList.remove('open');
+                UI.sidebarOverlay.classList.remove('open');
+            },
+
+            formatDate: (timestamp) => {
+                if(!timestamp) return '';
+                const d = new Date(timestamp);
+                return `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+            },
+
+            // Canvas API를 이용한 클라이언트 사이드 이미지 리사이징 (비율 유지)
+            resizeImage: (file, maxWidth, quality, callback) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        let width = img.width;
+                        let height = img.height;
+                        
+                        if (width > maxWidth) {
+                            height = Math.round((height * maxWidth) / width);
+                            width = maxWidth;
+                        }
+                        
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        callback(canvas.toDataURL('image/jpeg', quality));
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            },
+
+            calculateDday: (startDateStr) => {
+                if(!startDateStr) return "설정 필요";
+                const start = new Date(startDateStr);
+                start.setHours(0,0,0,0);
+                const now = new Date();
+                now.setHours(0,0,0,0);
+                const diff = now - start;
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24)) + 1; // 시작일을 1일로 계산
+                return `D+${days}`;
+            }
+        };
+
+        // Auth Listener
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                // 로그인 완료 후 데이터베이스 확인
+                checkCoupleAppSetup();
+            } else {
+                // 자동 로그인 시도
+                try {
+                    if (initialAuthToken) {
+                        await signInWithCustomToken(auth, initialAuthToken);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+                } catch(e) {
+                    Utils.showModal("오류", "인증 서버 연결에 실패했습니다.");
+                    UI.loader.classList.add('hidden');
+                }
+            }
+        });
+
+        const usersDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'accounts', 'couple');
+        const settingsDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'main');
+        const postsColRef = collection(db, 'artifacts', appId, 'public', 'data', 'posts');
+        const photosColRef = collection(db, 'artifacts', appId, 'public', 'data', 'photos');
+
+        async function checkCoupleAppSetup() {
+            try {
+                // 세션 스토리지 확인 (새로고침 시 유지)
+                const savedRole = sessionStorage.getItem(`couple_role_${appId}`);
+                
+                // 설정 데이터 리스너 (전역: 로그인 화면 사진 및 홈 화면 적용용)
+                onSnapshot(settingsDocRef, (docSnap) => {
+                    if (docSnap.exists()) {
+                        coupleData = docSnap.data();
+                        
+                        // 로그인 화면 사진 업데이트
+                        const loginImg = document.getElementById('login-main-img');
+                        if (loginImg) {
+                            loginImg.src = coupleData.loginBgImage || 'https://placehold.co/1080x1080/ffe4e8/ffb3c6?text=Photo';
+                        }
+                        
+                        // 로그인 된 상태라면 뷰 업데이트
+                        if (currentRole) {
+                            renderHome();
+                            renderSettingsInput();
+                        }
+                    }
+                });
+
+                onSnapshot(usersDocRef, (docSnap) => {
+                    UI.loader.classList.add('hidden');
+                    if (docSnap.exists()) {
+                        allUsersData = docSnap.data();
+                        
+                        if (savedRole && allUsersData[savedRole]) {
+                            // 이미 로그인 된 세션
+                            currentRole = savedRole;
+                            currentUserData = allUsersData[savedRole];
+                            startApp();
+                        } else {
+                            // 로그인 화면 표시
+                            UI.loginView.classList.remove('hidden');
+                            UI.mainApp.classList.add('hidden');
+                        }
+                    } else {
+                        // 최초 생성 (초기 데이터 셋팅)
+                        setDoc(usersDocRef, {
+                            male: { id: 'male', pass: '1234', nickname: '남자친구', birthdate: '', profilePic: '' },
+                            female: { id: 'female', pass: '1234', nickname: '여자친구', birthdate: '', profilePic: '' }
+                        }).then(() => {
+                            setDoc(settingsDocRef, { dday: '', bgImage: '', loginBgImage: '' });
+                            Utils.showModal("환영합니다", "초기 설정이 완료되었습니다.\n기본 비밀번호는 '1234' 입니다.");
+                        });
+                    }
+                }, (error) => {
+                    console.error("DB Error:", error);
+                    Utils.showModal("오류", "데이터를 불러올 수 없습니다.");
+                });
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        // 로그인 탭 전환 로직
+        UI.tabs.male.onclick = () => {
+            selectedLoginRole = 'male';
+            UI.tabs.male.classList.replace('text-text-light', 'text-main-pink');
+            UI.tabs.male.classList.add('bg-pastel-pink');
+            UI.tabs.female.classList.replace('text-main-pink', 'text-text-light');
+            UI.tabs.female.classList.remove('bg-pastel-pink');
+            document.getElementById('login-id').value = 'male';
+        };
+        UI.tabs.female.onclick = () => {
+            selectedLoginRole = 'female';
+            UI.tabs.female.classList.replace('text-text-light', 'text-main-pink');
+            UI.tabs.female.classList.add('bg-pastel-pink');
+            UI.tabs.male.classList.replace('text-main-pink', 'text-text-light');
+            UI.tabs.male.classList.remove('bg-pastel-pink');
+            document.getElementById('login-id').value = 'female';
+        };
+        // 초기 셋팅
+        document.getElementById('login-id').value = 'male';
+        document.getElementById('login-id').readOnly = true;
+
+        // 로그인 처리
+        document.getElementById('btn-login').onclick = () => {
+            const pass = document.getElementById('login-password').value;
+            const statusMsg = document.getElementById('login-status-msg');
+            
+            if (!allUsersData[selectedLoginRole]) {
+                statusMsg.innerText = "계정 정보를 찾을 수 없습니다."; return;
+            }
+            if (allUsersData[selectedLoginRole].pass === pass) {
+                currentRole = selectedLoginRole;
+                currentUserData = allUsersData[selectedLoginRole];
+                sessionStorage.setItem(`couple_role_${appId}`, currentRole);
+                document.getElementById('login-password').value = '';
+                UI.loginView.classList.add('hidden');
+                startApp();
+            } else {
+                statusMsg.innerText = "비밀번호가 일치하지 않습니다.";
+            }
+        };
+
+        // 로그아웃
+        document.getElementById('btn-logout').onclick = () => {
+            Utils.showModal("로그아웃", "로그아웃 하시겠습니까?", true, () => {
+                sessionStorage.removeItem(`couple_role_${appId}`);
+                currentRole = null;
+                currentUserData = null;
+                unsubscribes.forEach(unsub => unsub()); // 리스너 해제
+                unsubscribes = [];
+                UI.mainApp.classList.add('hidden');
+                UI.loginView.classList.remove('hidden');
+            });
+        };
+
+        function startApp() {
+            UI.mainApp.classList.remove('hidden');
+            Utils.showView('home', '우리의 홈');
+            updateSidebarProfile();
+            
+            renderHome();
+            renderSettingsInput();
+
+            // 전역 데이터 리스너 등록 (글, 사진)
+            unsubscribes.push(
+                onSnapshot(postsColRef, (snapshot) => {
+                    let posts = [];
+                    snapshot.forEach(doc => posts.push({ id: doc.id, ...doc.data() }));
+                    // 메모리상에서 최신순 정렬 (Rule 2 준수)
+                    posts.sort((a, b) => b.timestamp - a.timestamp);
+                    renderTextBoard(posts);
+                })
+            );
+
+            unsubscribes.push(
+                onSnapshot(photosColRef, (snapshot) => {
+                    let photos = [];
+                    snapshot.forEach(doc => photos.push({ id: doc.id, ...doc.data() }));
+                    // 정렬
+                    photos.sort((a, b) => b.timestamp - a.timestamp);
+                    currentPhotosList = photos;
+                    renderPhotoBoard(photos);
+                    
+                    // 모달이 열려있다면 댓글 실시간 갱신
+                    if (currentPhotoModalId && !document.getElementById('photo-modal').classList.contains('hidden')) {
+                        const updatedPhoto = currentPhotosList.find(p => p.id === currentPhotoModalId);
+                        if (updatedPhoto) {
+                            renderPhotoComments(updatedPhoto);
+                        } else {
+                            document.getElementById('photo-modal').classList.add('hidden');
+                        }
+                    }
+                })
+            );
+        }
+
+        // [로그인 화면] 대표 사진 변경
+        document.getElementById('input-login-img').onchange = (e) => {
+            const file = e.target.files[0];
+            if(!file) return;
+            
+            Utils.showModal("업로드 중", "사진을 저장하고 있습니다...");
+            Utils.resizeImage(file, 1080, 0.7, async (base64) => {
+                try {
+                    await updateDoc(settingsDocRef, { loginBgImage: base64 });
+                    document.getElementById('custom-modal').classList.add('hidden');
+                } catch(err) {
+                    Utils.showModal("오류", "사진 적용에 실패했습니다.");
+                }
+            });
+        };
+
+        // 메뉴 조작
+        document.getElementById('btn-menu').onclick = () => {
+            UI.sidebar.classList.add('open');
+            UI.sidebarOverlay.classList.add('open');
+        };
+        UI.sidebarOverlay.onclick = () => {
+            UI.sidebar.classList.remove('open');
+            UI.sidebarOverlay.classList.remove('open');
+        };
+        UI.navBtns.forEach(btn => {
+            btn.onclick = (e) => {
+                const target = e.currentTarget.getAttribute('data-target');
+                const title = e.currentTarget.innerText.trim();
+                Utils.showView(target, title);
+            };
+        });
+
+        function updateSidebarProfile() {
+            document.getElementById('menu-nickname').innerText = currentUserData.nickname || (currentRole === 'male' ? '남자친구' : '여자친구');
+            document.getElementById('menu-role').innerText = currentRole === 'male' ? 'Male' : 'Female';
+            if (currentUserData.profilePic) {
+                document.getElementById('menu-profile-pic').src = currentUserData.profilePic;
+            }
+        }
+
+        function renderHome() {
+            const counter = document.getElementById('dday-count');
+            const dateLabel = document.getElementById('dday-date');
+            const bgContainer = document.getElementById('home-bg-container');
+
+            if (coupleData.dday) {
+                counter.innerText = Utils.calculateDday(coupleData.dday);
+                dateLabel.innerText = `${coupleData.dday.replace(/-/g, '.')} 시작`;
+            } else {
+                counter.innerText = "D-day 설정필요";
+                dateLabel.innerText = "설정 메뉴에서 등록해주세요";
+            }
+
+            if (coupleData.bgImage) {
+                bgContainer.style.backgroundImage = `url('${coupleData.bgImage}')`;
+            }
+        }
+
+        function renderSettingsInput() {
+            document.getElementById('setting-nickname').value = currentUserData.nickname || '';
+            document.getElementById('setting-birthdate').value = currentUserData.birthdate || '';
+            if (currentUserData.profilePic) {
+                document.getElementById('setting-profile-pic').src = currentUserData.profilePic;
+            } else {
+                document.getElementById('setting-profile-pic').src = "https://placehold.co/150x150/ffb3c6/ffffff?text=♡";
+            }
+            if (coupleData.dday) {
+                document.getElementById('setting-dday').value = coupleData.dday;
+            }
+        }
+
+        // 텍스트 게시판 렌더링
+        function renderTextBoard(posts) {
+            const listEl = document.getElementById('post-list');
+            listEl.innerHTML = '';
+            
+            if(posts.length === 0) {
+                listEl.innerHTML = '<p class="text-center text-text-light py-10 text-sm">첫 번째 이야기를 남겨보세요 ♡</p>';
+                return;
+            }
+
+            posts.forEach(post => {
+                const isMine = post.authorRole === currentRole;
+                const authorData = allUsersData[post.authorRole];
+                const authorName = authorData ? authorData.nickname : '알 수 없음';
+                const profileImg = authorData && authorData.profilePic ? authorData.profilePic : 'https://placehold.co/50x50/ffb3c6/ffffff?text=♡';
+
+                // 댓글 렌더링 HTML 생성
+                let commentsHtml = '';
+                if(post.comments && post.comments.length > 0) {
+                    post.comments.forEach((c, idx) => {
+                        const cIsMine = c.authorRole === currentRole;
+                        const cAuthorData = allUsersData[c.authorRole];
+                        const cName = cAuthorData ? cAuthorData.nickname : '알 수 없음';
+                        commentsHtml += `
+                            <div class="flex items-start gap-2 mt-2 bg-pastel-pink/30 p-2 rounded-lg">
+                                <span class="text-xs font-bold text-main-pink min-w-fit">${cName}</span>
+                                <span class="text-xs text-text-dark flex-1 break-all">${c.text}</span>
+                                ${cIsMine ? `<button class="text-xs text-gray-400 hover:text-red-400" onclick="deleteComment('${post.id}', ${idx})"><i class="fas fa-times"></i></button>` : ''}
+                            </div>
+                        `;
+                    });
+                }
+
+                // JS 이스케이프 처리 (prompt 창에 넘길 때 오류 방지)
+                const safeTitle = post.title ? post.title.replace(/'/g, "\\'").replace(/"/g, "&quot;") : '';
+                const safeText = post.text ? post.text.replace(/'/g, "\\'").replace(/"/g, "&quot;").replace(/\n/g, "\\n") : '';
+
+                const html = `
+                    <div class="bg-white rounded-2xl p-4 cute-shadow">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center gap-2">
+                                <img src="${profileImg}" class="w-8 h-8 rounded-full object-cover">
+                                <div>
+                                    <div class="text-sm font-bold text-text-dark">${authorName}</div>
+                                    <div class="text-[10px] text-text-light">${Utils.formatDate(post.timestamp)}</div>
+                                </div>
+                            </div>
+                            ${isMine ? `
+                            <div class="flex gap-2">
+                                <button class="text-xs text-gray-400 hover:text-main-pink" onclick="editPost('${post.id}', '${safeTitle}', '${safeText}')">수정</button>
+                                <button class="text-xs text-gray-400 hover:text-red-400" onclick="deletePost('${post.id}')">삭제</button>
+                            </div>
+                            ` : ''}
+                        </div>
+                        ${post.title ? `<h4 class="font-bold text-deep-pink mb-1 text-base ml-1 break-all">${post.title}</h4>` : ''}
+                        <p class="text-sm text-text-dark whitespace-pre-wrap mb-4 ml-1 break-all">${post.text}</p>
+                        
+                        <!-- 댓글 영역 -->
+                        <div class="border-t border-gray-100 pt-2 mt-2">
+                            ${commentsHtml}
+                            <div class="flex gap-2 mt-2">
+                                <input type="text" id="comment-input-${post.id}" placeholder="댓글 달기..." class="text-xs py-1 px-3 border-gray-200">
+                                <button class="bg-main-pink text-white text-xs px-3 rounded-lg whitespace-nowrap" onclick="addComment('${post.id}')">등록</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                listEl.insertAdjacentHTML('beforeend', html);
+            });
+        }
+
+        // [설정] 개인 정보 저장
+        document.getElementById('btn-save-my-info').onclick = async () => {
+            const newNick = document.getElementById('setting-nickname').value.trim();
+            const newBirth = document.getElementById('setting-birthdate').value;
+            const newPass = document.getElementById('setting-password').value.trim();
+            
+            let updateData = {};
+            if(newNick) updateData[`${currentRole}.nickname`] = newNick;
+            updateData[`${currentRole}.birthdate`] = newBirth;
+            if(newPass) updateData[`${currentRole}.pass`] = newPass;
+
+            try {
+                await updateDoc(usersDocRef, updateData);
+                currentUserData.nickname = newNick || currentUserData.nickname;
+                currentUserData.birthdate = newBirth;
+                updateSidebarProfile();
+                Utils.showModal("성공", "내 정보가 수정되었습니다.");
+                document.getElementById('setting-password').value = '';
+            } catch(e) {
+                Utils.showModal("오류", "저장에 실패했습니다.");
+            }
+        };
+
+        // [설정] 개인 프로필 사진 변경
+        document.getElementById('input-profile-pic').onchange = (e) => {
+            const file = e.target.files[0];
+            if(!file) return;
+            // 150px 정사각형으로 리사이징 후 저장
+            Utils.resizeImage(file, 150, 0.8, async (base64) => {
+                try {
+                    let updateData = {};
+                    updateData[`${currentRole}.profilePic`] = base64;
+                    await updateDoc(usersDocRef, updateData);
+                    document.getElementById('setting-profile-pic').src = base64;
+                    currentUserData.profilePic = base64;
+                    updateSidebarProfile();
+                } catch(err) {
+                    Utils.showModal("오류", "사진 업로드에 실패했습니다.");
+                }
+            });
+        };
+
+        // [설정] 커플 정보 저장
+        document.getElementById('btn-save-couple-info').onclick = async () => {
+            const newDday = document.getElementById('setting-dday').value;
+            try {
+                await updateDoc(settingsDocRef, { dday: newDday });
+                Utils.showModal("성공", "커플 정보가 수정되었습니다.");
+            } catch(e) {
+                Utils.showModal("오류", "저장에 실패했습니다.");
+            }
+        };
+
+        // [홈] 배경화면 변경
+        document.getElementById('input-home-bg').onchange = (e) => {
+            const file = e.target.files[0];
+            if(!file) return;
+            // 화면 꽉 차게 쓰므로 1080px 기준으로 리사이징
+            Utils.resizeImage(file, 1080, 0.7, async (base64) => {
+                try {
+                    await updateDoc(settingsDocRef, { bgImage: base64 });
+                    Utils.showModal("성공", "배경화면이 변경되었습니다.");
+                } catch(err) {
+                    Utils.showModal("오류", "배경화면 적용에 실패했습니다.");
+                }
+            });
+        };
+
+        // [게시판] 글 작성
+        document.getElementById('btn-submit-post').onclick = async () => {
+            const titleInput = document.getElementById('post-input-title');
+            const input = document.getElementById('post-input-text');
+            const title = titleInput.value.trim();
+            const text = input.value.trim();
+            
+            if(!title) { Utils.showModal("알림", "제목을 적어주세요."); return; }
+            if(!text) { Utils.showModal("알림", "내용을 적어주세요."); return; }
+            
+            try {
+                const newDocRef = doc(postsColRef);
+                await setDoc(newDocRef, {
+                    title: title,
+                    text: text,
+                    authorRole: currentRole,
+                    timestamp: Date.now(),
+                    comments: []
+                });
+                titleInput.value = '';
+                input.value = '';
+            } catch(e) {
+                Utils.showModal("오류", "글 작성에 실패했습니다.");
+            }
+        };
+
+        // [게시판] 글 삭제 (전역 노출)
+        window.deletePost = (postId) => {
+            Utils.showModal("삭제", "이 이야기를 지울까요?", true, async () => {
+                await deleteDoc(doc(postsColRef, postId));
+            });
+        };
+
+        // [게시판] 글 수정
+        window.editPost = (postId, currentTitle, currentText) => {
+            const newTitle = prompt("제목을 수정하세요:", currentTitle);
+            if(newTitle === null) return;
+            const newText = prompt("이야기를 수정하세요:", currentText);
+            if(newText === null) return;
+
+            if(newTitle.trim() !== "" && newText.trim() !== "") {
+                updateDoc(doc(postsColRef, postId), { 
+                    title: newTitle.trim(),
+                    text: newText.trim() 
+                });
+            }
+        };
+
+        // [게시판] 댓글 작성
+        window.addComment = async (postId) => {
+            const input = document.getElementById(`comment-input-${postId}`);
+            const text = input.value.trim();
+            if(!text) return;
+
+            try {
+                const postRef = doc(postsColRef, postId);
+                const docSnap = await getDoc(postRef);
+                if(docSnap.exists()) {
+                    let comments = docSnap.data().comments || [];
+                    comments.push({ text: text, authorRole: currentRole, timestamp: Date.now() });
+                    await updateDoc(postRef, { comments: comments });
+                }
+            } catch(e) {
+                Utils.showModal("오류", "댓글 작성 실패");
+            }
+        };
+
+        // [게시판] 댓글 삭제
+        window.deleteComment = async (postId, commentIdx) => {
+            Utils.showModal("삭제", "댓글을 삭제할까요?", true, async () => {
+                const postRef = doc(postsColRef, postId);
+                const docSnap = await getDoc(postRef);
+                if(docSnap.exists()) {
+                    let comments = docSnap.data().comments || [];
+                    comments.splice(commentIdx, 1);
+                    await updateDoc(postRef, { comments: comments });
+                }
+            });
+        };
+
+        // [사진] 업로드 (캔버스 리사이징 적용)
+        document.getElementById('input-upload-photo').onchange = (e) => {
+            const file = e.target.files[0];
+            if(!file) return;
+            
+            Utils.showModal("업로드 중", "사진을 최적화하여 올리고 있습니다...");
+            // 사진 게시판용 최대 너비 1080px 유지, 비율 자동 조절
+            Utils.resizeImage(file, 1080, 0.7, async (base64) => {
+                try {
+                    const newDocRef = doc(photosColRef);
+                    await setDoc(newDocRef, {
+                        image: base64,
+                        authorRole: currentRole,
+                        timestamp: Date.now(),
+                        comments: []
+                    });
+                    document.getElementById('custom-modal').classList.add('hidden');
+                } catch(err) {
+                    Utils.showModal("오류", "사진 업로드에 실패했습니다.");
+                }
+            });
+        };
+
+        // 사진 게시판 렌더링
+        function renderPhotoBoard(photos) {
+            const gridEl = document.getElementById('photo-grid');
+            gridEl.innerHTML = '';
+            
+            if(photos.length === 0) {
+                gridEl.innerHTML = '<p class="text-center text-text-light py-10 text-sm w-full col-span-2">첫 번째 사진을 올려보세요 ♡</p>';
+                return;
+            }
+
+            photos.forEach(photo => {
+                const isMine = photo.authorRole === currentRole;
+                const cCount = photo.comments ? photo.comments.length : 0;
+
+                const html = `
+                    <div class="photo-item cute-shadow group cursor-pointer" onclick="openPhotoModal('${photo.id}')">
+                        <img src="${photo.image}" loading="lazy">
+                        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-2 flex justify-between items-end pointer-events-none">
+                            <span class="text-white text-[10px] drop-shadow-md"><i class="fas fa-comment mr-1"></i> ${cCount}</span>
+                        </div>
+                        ${isMine ? `<button class="absolute top-2 right-2 text-white text-[10px] bg-red-500/80 px-2 py-1 rounded shadow pointer-events-auto" onclick="event.stopPropagation(); deletePhoto('${photo.id}')">삭제</button>` : ''}
+                    </div>
+                `;
+                gridEl.insertAdjacentHTML('beforeend', html);
+            });
+        }
+
+        // [사진] 삭제
+        window.deletePhoto = (photoId) => {
+            Utils.showModal("삭제", "이 사진을 지울까요?", true, async () => {
+                await deleteDoc(doc(photosColRef, photoId));
+            });
+        };
+
+        // [사진] 상세 모달 열기 및 닫기
+        document.getElementById('btn-close-photo-modal').onclick = () => {
+            document.getElementById('photo-modal').classList.add('hidden');
+            currentPhotoModalId = null;
+        };
+
+        window.openPhotoModal = (photoId) => {
+            const photo = currentPhotosList.find(p => p.id === photoId);
+            if(!photo) return;
+            
+            currentPhotoModalId = photoId;
+            document.getElementById('photo-modal-img').src = photo.image;
+            document.getElementById('photo-modal').classList.remove('hidden');
+            document.getElementById('photo-comment-input').value = '';
+            
+            renderPhotoComments(photo);
+        };
+
+        // [사진] 댓글 렌더링
+        window.renderPhotoComments = (photo) => {
+            const commentsContainer = document.getElementById('photo-modal-comments');
+            commentsContainer.innerHTML = '';
+            
+            if(!photo.comments || photo.comments.length === 0) {
+                commentsContainer.innerHTML = '<p class="text-xs text-gray-400 text-center py-4">아직 댓글이 없습니다.</p>';
+                return;
+            }
+
+            photo.comments.forEach((c, idx) => {
+                const cIsMine = c.authorRole === currentRole;
+                const cAuthorData = allUsersData[c.authorRole];
+                const cName = cAuthorData ? cAuthorData.nickname : '알 수 없음';
+                
+                const html = `
+                    <div class="flex items-start gap-2 bg-pastel-pink/20 p-2 rounded-lg mb-2">
+                        <span class="text-xs font-bold text-main-pink min-w-fit">${cName}</span>
+                        <span class="text-xs text-text-dark flex-1 break-all">${c.text}</span>
+                        ${cIsMine ? `<button class="text-xs text-gray-400 hover:text-red-400" onclick="deletePhotoComment('${photo.id}', ${idx})"><i class="fas fa-times"></i></button>` : ''}
+                    </div>
+                `;
+                commentsContainer.insertAdjacentHTML('beforeend', html);
+            });
+            // 렌더링 후 스크롤을 맨 아래로 이동
+            setTimeout(() => {
+                commentsContainer.scrollTop = commentsContainer.scrollHeight;
+            }, 50);
+        };
+
+        // [사진] 댓글 달기
+        document.getElementById('btn-add-photo-comment').onclick = async () => {
+            if(!currentPhotoModalId) return;
+            const input = document.getElementById('photo-comment-input');
+            const text = input.value.trim();
+            if(!text) return;
+
+            try {
+                const postRef = doc(photosColRef, currentPhotoModalId);
+                const docSnap = await getDoc(postRef);
+                if(docSnap.exists()) {
+                    let comments = docSnap.data().comments || [];
+                    comments.push({ text: text, authorRole: currentRole, timestamp: Date.now() });
+                    await updateDoc(postRef, { comments: comments });
+                    input.value = '';
+                }
+            } catch(e) {
+                Utils.showModal("오류", "댓글 작성 실패");
+            }
+        };
+
+        // [사진] 댓글 삭제
+        window.deletePhotoComment = async (photoId, commentIdx) => {
+            Utils.showModal("삭제", "댓글을 삭제할까요?", true, async () => {
+                const postRef = doc(photosColRef, photoId);
+                const docSnap = await getDoc(postRef);
+                if(docSnap.exists()) {
+                    let comments = docSnap.data().comments || [];
+                    comments.splice(commentIdx, 1);
+                    await updateDoc(postRef, { comments: comments });
+                }
+            });
+        };
+
+    </script>
+</body>
+</html>
