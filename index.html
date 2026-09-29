@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>우리의 공간 ♡</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Jua&display=swap" rel="stylesheet">
@@ -30,19 +30,23 @@
     </script>
 
     <style>
-        body {
+        /* 모바일 브라우저 하단 바에 가려지지 않도록 동적 뷰포트(dvh) 적용 */
+        html, body {
+            height: 100%;
+            height: 100dvh;
             font-family: 'Gowun Dodum', sans-serif;
             background-color: #ffe4e8;
             color: #5c4d50;
             margin: 0;
             padding: 0;
-            overflow-x: hidden;
+            overflow: hidden; /* 전역 스크롤 방지, 내부 영역만 스크롤 */
             -webkit-tap-highlight-color: transparent;
         }
 
         ::-webkit-scrollbar { display: none; }
         
         .cute-shadow { box-shadow: 0 4px 15px rgba(255, 143, 171, 0.2); }
+        .login-shadow { box-shadow: 0 10px 25px rgba(255, 143, 171, 0.3); }
         
         .glass-panel {
             background: rgba(255, 255, 255, 0.85);
@@ -78,7 +82,7 @@
             border-radius: 12px;
             overflow: hidden;
             position: relative;
-            aspect-ratio: 1 / 1; /* 정사각형 썸네일 강제 유지 */
+            aspect-ratio: 1 / 1;
         }
         .photo-item img {
             width: 100%;
@@ -195,21 +199,21 @@
     </div>
 
     <!-- 사진 상세 및 댓글 모달 -->
-    <div id="photo-modal" class="fixed inset-0 bg-black/90 z-[95] hidden flex-col transition-opacity">
+    <div id="photo-modal" class="fixed inset-0 bg-black/90 z-[95] hidden flex-col transition-opacity h-full">
         <div class="flex justify-between items-center p-4">
             <div class="text-white font-jua text-lg">우리의 추억</div>
             <button id="btn-close-photo-modal" class="text-white text-2xl px-2 py-1"><i class="fas fa-times"></i></button>
         </div>
-        <div class="flex-1 overflow-y-auto pb-4 flex flex-col">
+        <div class="flex-1 overflow-hidden flex flex-col">
             <div class="w-full flex justify-center items-center bg-black min-h-[40vh] max-h-[60vh] overflow-hidden">
                 <img id="photo-modal-img" src="" class="w-full h-full object-contain">
             </div>
-            <div class="bg-white rounded-t-3xl mt-[-20px] relative p-5 flex-1 flex flex-col">
-                <h3 class="font-jua text-deep-pink text-lg mb-3">댓글</h3>
-                <div id="photo-modal-comments" class="space-y-2 mb-4 overflow-y-auto flex-1 max-h-[30vh]">
+            <div class="bg-white rounded-t-3xl mt-[-20px] relative p-5 flex-1 flex flex-col min-h-0">
+                <h3 class="font-jua text-deep-pink text-lg mb-3 shrink-0">댓글</h3>
+                <div id="photo-modal-comments" class="space-y-2 mb-4 overflow-y-auto flex-1">
                     <!-- JS로 렌더링 -->
                 </div>
-                <div class="flex gap-2 border-t pt-3 border-gray-100 shrink-0">
+                <div class="flex gap-2 border-t pt-3 border-gray-100 shrink-0 pb-safe">
                     <input type="text" id="photo-comment-input" placeholder="따뜻한 댓글 남기기..." class="text-sm py-2 px-3 flex-1 border-gray-200">
                     <button id="btn-add-photo-comment" class="bg-main-pink text-white text-sm px-4 rounded-xl whitespace-nowrap font-bold shadow-sm">등록</button>
                 </div>
@@ -217,19 +221,16 @@
         </div>
     </div>
 
-    <div id="login-view" class="fixed inset-0 bg-white z-[80] hidden flex-col">
-        <div class="relative flex-1 bg-pastel-pink min-h-[50%]">
-            <img id="login-main-img" src="https://placehold.co/1080x1080/ffe4e8/ffb3c6?text=Photo" class="w-full h-full object-cover">
-            <label class="absolute bottom-6 right-4 bg-white/80 backdrop-blur-sm text-main-pink w-12 h-12 rounded-full flex items-center justify-center cute-shadow cursor-pointer hover:bg-white transition-colors">
-                <i class="fas fa-camera text-xl"></i>
-                <input type="file" id="input-login-img" accept="image/*" class="hidden">
-            </label>
-        </div>
-        
-        <div class="bg-white rounded-t-3xl -mt-6 relative z-10 p-6 pb-12 shadow-[0_-10px_20px_rgba(0,0,0,0.05)] flex flex-col justify-end shrink-0">
+    <!-- 심플하게 개선된 로그인 뷰 (모바일 주소창 대응) -->
+    <div id="login-view" class="fixed inset-0 bg-pastel-pink z-[80] hidden flex-col items-center justify-center p-5">
+        <!-- 하단 마진(mb-16)을 주어 모바일 주소창/툴바에 폼이 가려지지 않게 중간 위로 배치 -->
+        <div class="bg-white rounded-3xl p-7 w-full max-w-sm login-shadow flex flex-col justify-center mb-16 relative z-10">
             <div class="text-center mb-6">
+                <div class="w-16 h-16 mx-auto bg-pastel-pink rounded-full flex items-center justify-center mb-3">
+                    <i class="fas fa-heart text-3xl text-main-pink"></i>
+                </div>
                 <h1 class="text-3xl font-jua text-deep-pink mb-1">우리의 공간</h1>
-                <p class="text-text-light text-sm">둘만의 비밀스러운 공간</p>
+                <p class="text-text-light text-sm">둘만의 비밀스러운 일기장</p>
             </div>
 
             <div class="flex bg-pastel-pink/30 rounded-xl mb-6 p-1 cute-shadow">
@@ -239,16 +240,21 @@
 
             <div id="login-form-container">
                 <p id="login-status-msg" class="text-sm text-main-pink mb-2 text-center h-5"></p>
-                <input type="text" id="login-id" placeholder="아이디 입력 (고정)" class="mb-3 bg-gray-50 text-text-light outline-none" readonly>
-                <input type="password" id="login-password" placeholder="비밀번호 입력 (초기: 1234)" class="mb-6">
+                <input type="text" id="login-id" placeholder="아이디 입력 (고정)" class="mb-3 bg-gray-50 text-text-light outline-none text-center font-bold" readonly>
+                <input type="password" id="login-password" placeholder="비밀번호 입력 (초기: 1234)" class="mb-6 text-center">
                 <button id="btn-login" class="w-full bg-main-pink hover:bg-deep-pink text-white font-bold py-3.5 rounded-xl transition-colors shadow-md text-lg">
                     입장하기
                 </button>
             </div>
         </div>
+        
+        <!-- 장식용 배경 하트 -->
+        <i class="fas fa-heart absolute top-10 left-10 text-main-pink/20 text-5xl transform -rotate-12"></i>
+        <i class="fas fa-heart absolute bottom-20 right-10 text-main-pink/20 text-6xl transform rotate-12"></i>
     </div>
 
-    <div id="main-app" class="hidden h-screen flex flex-col">
+    <!-- 메인 앱 영역 -->
+    <div id="main-app" class="hidden h-full flex flex-col relative">
         <header class="fixed top-0 left-0 right-0 h-14 glass-panel z-30 flex items-center justify-between px-4">
             <button id="btn-menu" class="text-deep-pink text-2xl p-2"><i class="fas fa-bars"></i></button>
             <h1 id="header-title" class="font-jua text-xl text-deep-pink">우리의 홈</h1>
@@ -279,29 +285,33 @@
                     <i class="fas fa-cog w-6 text-main-pink text-center mr-2"></i> 설정
                 </button>
             </div>
-            <div class="p-4 border-t border-gray-100">
+            <div class="p-4 border-t border-gray-100 shrink-0 pb-safe">
                 <button id="btn-logout" class="w-full py-2 text-sm text-text-light hover:text-deep-pink transition-colors">로그아웃</button>
             </div>
         </nav>
 
-        <main class="flex-1 mt-14 relative h-full overflow-y-auto">
-            <!-- 홈 뷰 -->
-            <section id="view-home" class="view-section active h-full relative">
-                <div id="home-bg-container" class="absolute inset-0 bg-cover bg-center z-0 transition-all duration-500" style="background-image: url('https://placehold.co/1080x1920/ffe4e8/ffb3c6?text=Upload+Background');">
-                    <div class="absolute inset-0 bg-white/30 backdrop-blur-[2px]"></div>
+        <main class="flex-1 mt-14 relative h-[calc(100%-3.5rem)] overflow-y-auto bg-[#fffafb]">
+            
+            <!-- 홈 뷰 (대문 사진 역할) -->
+            <section id="view-home" class="view-section active h-full relative p-0">
+                <div id="home-bg-container" class="absolute inset-0 bg-cover bg-center z-0 transition-all duration-500" style="background-image: url('https://placehold.co/1080x1920/ffe4e8/ffb3c6?text=Upload+Cover+Photo');">
+                    <!-- 어두운 오버레이 추가로 텍스트 가독성 확보 -->
+                    <div class="absolute inset-0 bg-black/20"></div>
                 </div>
+                
                 <div class="relative z-10 flex flex-col items-center justify-center h-full pt-10 pb-20 px-4">
-                    <div class="glass-panel p-8 rounded-3xl text-center cute-shadow w-full max-w-sm">
-                        <h2 class="text-lg text-text-dark mb-2">우리가 함께한 지</h2>
+                    <div class="glass-panel p-8 rounded-3xl text-center cute-shadow w-full max-w-sm mb-10">
+                        <h2 class="text-lg text-text-dark font-bold mb-2">우리가 함께한 지</h2>
                         <div class="font-jua text-5xl text-deep-pink mb-4 drop-shadow-md">
                             <span id="dday-count">D+0</span>
                         </div>
-                        <p class="text-sm text-text-light" id="dday-date">YYYY.MM.DD 시작</p>
+                        <p class="text-sm text-text-dark font-bold" id="dday-date">YYYY.MM.DD 시작</p>
                     </div>
                     
-                    <div class="absolute bottom-6 right-6">
-                        <label class="bg-white/80 backdrop-blur-sm text-main-pink w-12 h-12 rounded-full flex items-center justify-center cute-shadow cursor-pointer hover:bg-white transition-colors">
-                            <i class="fas fa-camera text-xl"></i>
+                    <!-- 카메라 버튼 위치 상향 조정 (하단 메뉴바 회피) -->
+                    <div class="absolute bottom-12 right-6">
+                        <label class="bg-white text-main-pink w-14 h-14 rounded-full flex items-center justify-center cute-shadow cursor-pointer hover:bg-gray-50 transition-colors shadow-lg">
+                            <i class="fas fa-camera text-2xl"></i>
                             <input type="file" id="input-home-bg" accept="image/*" class="hidden">
                         </label>
                     </div>
@@ -364,11 +374,11 @@
                     <h2 class="font-jua text-2xl text-deep-pink"><i class="fas fa-book-heart mr-2"></i>우리의 일기장</h2>
                 </div>
                 
-                <div class="bg-white rounded-2xl p-4 cute-shadow mb-6">
+                <div class="bg-white rounded-2xl p-4 cute-shadow mb-6 border border-pastel-pink">
                     <input type="text" id="post-input-title" placeholder="제목을 적어주세요" class="mb-2 text-sm font-bold bg-gray-50 border-gray-100 focus:bg-white">
                     <textarea id="post-input-text" rows="3" placeholder="오늘 무슨 일이 있었나요?" class="mb-2 text-sm resize-none"></textarea>
                     <div class="flex justify-end">
-                        <button id="btn-submit-post" class="bg-deep-pink text-white px-4 py-2 rounded-xl text-sm font-bold shadow-md">글 남기기</button>
+                        <button id="btn-submit-post" class="bg-main-pink hover:bg-deep-pink text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-md transition-colors">글 남기기</button>
                     </div>
                 </div>
 
@@ -378,16 +388,17 @@
             </section>
 
             <!-- 사진 게시판 뷰 -->
-            <section id="view-photo-board" class="view-section p-2 relative">
+            <section id="view-photo-board" class="view-section p-2 relative min-h-full">
                 <div class="px-2 pt-2 flex justify-between items-center mb-2">
                     <h2 class="font-jua text-2xl text-deep-pink ml-2"><i class="fas fa-camera-retro mr-2"></i>추억 앨범</h2>
                 </div>
                 
-                <div id="photo-grid" class="photo-grid">
+                <div id="photo-grid" class="photo-grid pb-20">
                     <!-- JS에서 렌더링됨 -->
                 </div>
 
-                <label class="fixed bottom-6 right-6 bg-deep-pink text-white w-14 h-14 rounded-full flex items-center justify-center cute-shadow cursor-pointer hover:bg-main-pink transition-colors z-20">
+                <!-- 업로드 플로팅 버튼 -->
+                <label class="fixed bottom-8 right-6 bg-deep-pink text-white w-14 h-14 rounded-full flex items-center justify-center cute-shadow cursor-pointer hover:bg-main-pink transition-colors z-20 shadow-lg">
                     <i class="fas fa-plus text-2xl"></i>
                     <input type="file" id="input-upload-photo" accept="image/*" class="hidden">
                 </label>
@@ -433,8 +444,8 @@
         let currentPhotoModalId = null; 
         let editTargetPostId = null;
 
-        const basePath = `artifacts/${currentAppId}/public/data`;
-        const usersRef = ref(db, `${basePath}/accounts/couple`);
+        const basePath = `data/couple`;
+        const usersRef = ref(db, `${basePath}/accounts`);
         const settingsRef = ref(db, `${basePath}/settings/main`);
         const postsRef = ref(db, `${basePath}/posts`);
         const photosRef = ref(db, `${basePath}/photos`);
@@ -527,17 +538,13 @@
             }
         };
 
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                checkCoupleAppSetup();
-            } else {
-                try {
-                    await signInAnonymously(auth);
-                } catch(e) {
-                    UI.loader.classList.add('hidden');
-                    Utils.showModal("로그인 오류", "Firebase 익명 로그인(Anonymous)이 활성화되어 있는지 확인해 주세요.");
-                }
-            }
+        // 로그인 플로우 시작 (토큰 충돌 방지를 위해 곧바로 signInAnonymously 호출)
+        signInAnonymously(auth).then(() => {
+            checkCoupleAppSetup();
+        }).catch(err => {
+            console.error("Login Error:", err);
+            UI.loader.classList.add('hidden');
+            Utils.showModal("오류", "데이터베이스 연결에 실패했습니다.");
         });
 
         async function checkCoupleAppSetup() {
@@ -547,10 +554,6 @@
                 onValue(settingsRef, (snapshot) => {
                     if (snapshot.exists()) {
                         coupleData = snapshot.val();
-                        const loginImg = document.getElementById('login-main-img');
-                        if (loginImg) {
-                            loginImg.src = coupleData.loginBgImage || 'https://placehold.co/1080x1080/ffe4e8/ffb3c6?text=Photo';
-                        }
                         if (currentRole) {
                             renderHome();
                             renderSettingsInput();
@@ -577,13 +580,13 @@
                             male: { id: 'male', pass: '1234', nickname: '남자친구', birthdate: '', profilePic: '' },
                             female: { id: 'female', pass: '1234', nickname: '여자친구', birthdate: '', profilePic: '' }
                         }).then(() => {
-                            set(settingsRef, { dday: '', bgImage: '', loginBgImage: '' });
+                            set(settingsRef, { dday: '', bgImage: '' });
                             Utils.showModal("환영합니다", "초기 데이터가 생성되었습니다.\n기본 비밀번호는 '1234' 입니다.");
                         });
                     }
                 }, (error) => {
                     UI.loader.classList.add('hidden');
-                    Utils.showModal("오류", "데이터베이스 권한 오류입니다. Firebase 보안 규칙을 '.read: true, .write: true' 로 설정했는지 확인해주세요.");
+                    Utils.showModal("오류", "데이터베이스 권한 오류입니다. Firebase 보안 규칙을 확인해주세요.");
                 });
             } catch (e) {
                 console.error(e);
@@ -682,24 +685,20 @@
             );
         }
 
-        // 사진 파일 업로드 이벤트
-        document.getElementById('input-login-img').onchange = (e) => processUpload(e, settingsRef, 'loginBgImage');
-        document.getElementById('input-home-bg').onchange = (e) => processUpload(e, settingsRef, 'bgImage');
-        
-        function processUpload(e, refLocation, fieldName) {
+        // 대문(홈) 사진 업로드
+        document.getElementById('input-home-bg').onchange = (e) => {
             const file = e.target.files[0];
             if(!file) return;
             Utils.showModal("업로드 중", "사진을 저장하고 있습니다...");
             Utils.resizeImage(file, 1080, 0.7, async (base64) => {
                 try {
-                    let data = {}; data[fieldName] = base64;
-                    await update(refLocation, data);
+                    await update(settingsRef, { bgImage: base64 });
                     document.getElementById('custom-modal').classList.add('hidden');
                 } catch(err) {
                     Utils.showModal("오류", "사진 저장에 실패했습니다.");
                 }
             });
-        }
+        };
 
         // 메뉴 조작
         document.getElementById('btn-menu').onclick = () => {
@@ -741,6 +740,8 @@
 
             if (coupleData.bgImage) {
                 bgContainer.style.backgroundImage = `url('${coupleData.bgImage}')`;
+            } else {
+                bgContainer.style.backgroundImage = `url('https://placehold.co/1080x1920/ffe4e8/ffb3c6?text=Upload+Cover+Photo')`;
             }
         }
 
@@ -755,73 +756,6 @@
             if (coupleData.dday) {
                 document.getElementById('setting-dday').value = coupleData.dday;
             }
-        }
-
-        function renderTextBoard(posts) {
-            const listEl = document.getElementById('post-list');
-            listEl.innerHTML = '';
-            
-            if(posts.length === 0) {
-                listEl.innerHTML = '<p class="text-center text-text-light py-10 text-sm">첫 번째 이야기를 남겨보세요 ♡</p>';
-                return;
-            }
-
-            posts.forEach(post => {
-                const isMine = post.authorRole === currentRole;
-                const authorData = allUsersData[post.authorRole];
-                const authorName = authorData ? authorData.nickname : '알 수 없음';
-                const profileImg = authorData && authorData.profilePic ? authorData.profilePic : 'https://placehold.co/50x50/ffb3c6/ffffff?text=♡';
-
-                let commentsHtml = '';
-                if(post.comments && post.comments.length > 0) {
-                    post.comments.forEach((c, idx) => {
-                        const cIsMine = c.authorRole === currentRole;
-                        const cAuthorData = allUsersData[c.authorRole];
-                        const cName = cAuthorData ? cAuthorData.nickname : '알 수 없음';
-                        commentsHtml += `
-                            <div class="flex items-start gap-2 mt-2 bg-pastel-pink/30 p-2 rounded-lg">
-                                <span class="text-xs font-bold text-main-pink min-w-fit">${cName}</span>
-                                <span class="text-xs text-text-dark flex-1 break-all">${c.text}</span>
-                                ${cIsMine ? `<button class="text-xs text-gray-400 hover:text-red-400" onclick="deleteComment('${post.id}', ${idx})"><i class="fas fa-times"></i></button>` : ''}
-                            </div>
-                        `;
-                    });
-                }
-
-                const safeTitle = post.title ? post.title.replace(/"/g, '&quot;') : '';
-                const safeText = post.text ? post.text.replace(/"/g, '&quot;') : '';
-
-                const html = `
-                    <div class="bg-white rounded-2xl p-4 cute-shadow">
-                        <div class="flex items-center justify-between mb-3">
-                            <div class="flex items-center gap-2">
-                                <img src="${profileImg}" class="w-8 h-8 rounded-full object-cover">
-                                <div>
-                                    <div class="text-sm font-bold text-text-dark">${authorName}</div>
-                                    <div class="text-[10px] text-text-light">${Utils.formatDate(post.timestamp)}</div>
-                                </div>
-                            </div>
-                            ${isMine ? `
-                            <div class="flex gap-2">
-                                <button class="text-xs text-gray-400 hover:text-main-pink" onclick="openEditModal('${post.id}', '${safeTitle}', '${safeText}')">수정</button>
-                                <button class="text-xs text-gray-400 hover:text-red-400" onclick="deletePost('${post.id}')">삭제</button>
-                            </div>
-                            ` : ''}
-                        </div>
-                        ${post.title ? `<h4 class="font-bold text-deep-pink mb-1 text-base ml-1 break-all">${post.title}</h4>` : ''}
-                        <p class="text-sm text-text-dark whitespace-pre-wrap mb-4 ml-1 break-all">${post.text}</p>
-                        
-                        <div class="border-t border-gray-100 pt-2 mt-2">
-                            ${commentsHtml}
-                            <div class="flex gap-2 mt-2">
-                                <input type="text" id="comment-input-${post.id}" placeholder="댓글 달기..." class="text-xs py-1 px-3 border-gray-200">
-                                <button class="bg-main-pink text-white text-xs px-3 rounded-lg whitespace-nowrap" onclick="addComment('${post.id}')">등록</button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                listEl.insertAdjacentHTML('beforeend', html);
-            });
         }
 
         document.getElementById('btn-save-my-info').onclick = async () => {
@@ -873,7 +807,73 @@
             }
         };
 
-        // 게시글 추가/수정/삭제
+        function renderTextBoard(posts) {
+            const listEl = document.getElementById('post-list');
+            listEl.innerHTML = '';
+            
+            if(posts.length === 0) {
+                listEl.innerHTML = '<p class="text-center text-text-light py-10 text-sm">첫 번째 이야기를 남겨보세요 ♡</p>';
+                return;
+            }
+
+            posts.forEach(post => {
+                const isMine = post.authorRole === currentRole;
+                const authorData = allUsersData[post.authorRole];
+                const authorName = authorData ? authorData.nickname : '알 수 없음';
+                const profileImg = authorData && authorData.profilePic ? authorData.profilePic : 'https://placehold.co/50x50/ffb3c6/ffffff?text=♡';
+
+                let commentsHtml = '';
+                if(post.comments && post.comments.length > 0) {
+                    post.comments.forEach((c, idx) => {
+                        const cIsMine = c.authorRole === currentRole;
+                        const cAuthorData = allUsersData[c.authorRole];
+                        const cName = cAuthorData ? cAuthorData.nickname : '알 수 없음';
+                        commentsHtml += `
+                            <div class="flex items-start gap-2 mt-2 bg-pastel-pink/30 p-2 rounded-lg">
+                                <span class="text-xs font-bold text-main-pink min-w-fit">${cName}</span>
+                                <span class="text-xs text-text-dark flex-1 break-all">${c.text}</span>
+                                ${cIsMine ? `<button class="text-xs text-gray-400 hover:text-red-400" onclick="deleteComment('${post.id}', ${idx})"><i class="fas fa-times"></i></button>` : ''}
+                            </div>
+                        `;
+                    });
+                }
+
+                const safeTitle = post.title ? post.title.replace(/"/g, '&quot;') : '';
+                const safeText = post.text ? post.text.replace(/"/g, '&quot;') : '';
+
+                const html = `
+                    <div class="bg-white rounded-2xl p-4 cute-shadow">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center gap-2">
+                                <img src="${profileImg}" class="w-8 h-8 rounded-full object-cover border border-pastel-pink">
+                                <div>
+                                    <div class="text-sm font-bold text-text-dark">${authorName}</div>
+                                    <div class="text-[10px] text-text-light">${Utils.formatDate(post.timestamp)}</div>
+                                </div>
+                            </div>
+                            ${isMine ? `
+                            <div class="flex gap-2">
+                                <button class="text-xs text-gray-400 hover:text-main-pink font-bold" onclick="openEditModal('${post.id}', '${safeTitle}', '${safeText}')">수정</button>
+                                <button class="text-xs text-gray-400 hover:text-red-400 font-bold" onclick="deletePost('${post.id}')">삭제</button>
+                            </div>
+                            ` : ''}
+                        </div>
+                        ${post.title ? `<h4 class="font-bold text-deep-pink mb-1 text-base ml-1 break-all">${post.title}</h4>` : ''}
+                        <p class="text-sm text-text-dark whitespace-pre-wrap mb-4 ml-1 break-all leading-relaxed">${post.text}</p>
+                        
+                        <div class="border-t border-pastel-pink pt-3 mt-2">
+                            ${commentsHtml}
+                            <div class="flex gap-2 mt-3">
+                                <input type="text" id="comment-input-${post.id}" placeholder="댓글 달기..." class="text-xs py-2 px-3 border-gray-100 bg-gray-50 rounded-lg">
+                                <button class="bg-main-pink text-white text-xs px-4 rounded-lg whitespace-nowrap font-bold shadow-sm" onclick="addComment('${post.id}')">등록</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                listEl.insertAdjacentHTML('beforeend', html);
+            });
+        }
+
         document.getElementById('btn-submit-post').onclick = async () => {
             const titleInput = document.getElementById('post-input-title');
             const input = document.getElementById('post-input-text');
@@ -929,7 +929,6 @@
             }
         };
 
-        // 게시판 댓글
         window.addComment = async (postId) => {
             const input = document.getElementById(`comment-input-${postId}`);
             const text = input.value.trim();
@@ -941,6 +940,7 @@
                     let comments = snap.val().comments || [];
                     comments.push({ text: text, authorRole: currentRole, timestamp: Date.now() });
                     await update(postRef, { comments: comments });
+                    input.value = '';
                 }
             } catch(e) { Utils.showModal("오류", "댓글 작성 실패"); }
         };
