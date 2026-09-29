@@ -299,9 +299,10 @@
                     <div class="absolute inset-0 bg-black/20"></div>
                 </div>
                 
-                <div class="relative z-10 flex flex-col items-center justify-center h-full pt-10 pb-20 px-4">
-                    <!-- 기존 glass-panel 클래스를 지우고, 반투명 효과(bg-white/40, backdrop-blur-md)로 교체 -->
-                    <div class="bg-white/40 backdrop-blur-md border border-white/50 p-8 rounded-3xl text-center cute-shadow w-full max-w-sm mb-10">
+                <!-- 중앙 정렬(justify-center)을 상단 정렬(justify-start)로 변경하고 상단 여백(pt-24) 추가 -->
+                <div class="relative z-10 flex flex-col items-center justify-start h-full pt-24 pb-20 px-4">
+                    <!-- 투명도 60% (bg-white/40 적용) 및 하단 마진(mb-10) 제거 -->
+                    <div class="bg-white/40 backdrop-blur-md border border-white/50 p-8 rounded-3xl text-center cute-shadow w-full max-w-sm">
                         <h2 class="text-lg text-white font-bold mb-2 drop-shadow-md">우리가 함께한 지</h2>
                         <div class="font-jua text-5xl text-deep-pink mb-4 drop-shadow-md">
                             <span id="dday-count">D+0</span>
@@ -618,7 +619,9 @@
             const statusMsg = document.getElementById('login-status-msg');
             
             if (!allUsersData[selectedLoginRole]) {
-                statusMsg.innerText = "계정 정보를 찾을 수 없습니다."; return;
+                statusMsg.innerText = "계정 정보를 찾을 수 없습니다."; 
+                setTimeout(() => { statusMsg.innerText = ""; }, 2000);
+                return;
             }
             if (allUsersData[selectedLoginRole].pass === pass) {
                 currentRole = selectedLoginRole;
@@ -634,6 +637,12 @@
                 startApp();
             } else {
                 statusMsg.innerText = "비밀번호가 일치하지 않습니다.";
+                // 2초 뒤에 에러 메시지가 자동으로 사라지도록 처리
+                setTimeout(() => {
+                    if (statusMsg.innerText === "비밀번호가 일치하지 않습니다.") {
+                        statusMsg.innerText = "";
+                    }
+                }, 2000);
             }
         };
 
