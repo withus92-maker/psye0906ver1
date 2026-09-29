@@ -300,12 +300,13 @@
                 </div>
                 
                 <div class="relative z-10 flex flex-col items-center justify-center h-full pt-10 pb-20 px-4">
-                    <div class="glass-panel p-8 rounded-3xl text-center cute-shadow w-full max-w-sm mb-10">
-                        <h2 class="text-lg text-text-dark font-bold mb-2">우리가 함께한 지</h2>
+                    <!-- 기존 glass-panel 클래스를 지우고, 반투명 효과(bg-white/40, backdrop-blur-md)로 교체 -->
+                    <div class="bg-white/40 backdrop-blur-md border border-white/50 p-8 rounded-3xl text-center cute-shadow w-full max-w-sm mb-10">
+                        <h2 class="text-lg text-white font-bold mb-2 drop-shadow-md">우리가 함께한 지</h2>
                         <div class="font-jua text-5xl text-deep-pink mb-4 drop-shadow-md">
                             <span id="dday-count">D+0</span>
                         </div>
-                        <p class="text-sm text-text-dark font-bold" id="dday-date">YYYY.MM.DD 시작</p>
+                        <p class="text-sm text-white font-bold drop-shadow-md" id="dday-date">YYYY.MM.DD 시작</p>
                     </div>
                     
                     <!-- 카메라 버튼 위치 상향 조정 (하단 메뉴바 회피) -->
@@ -623,6 +624,11 @@
                 currentRole = selectedLoginRole;
                 currentUserData = allUsersData[selectedLoginRole];
                 sessionStorage.setItem(`couple_role_${currentAppId}`, currentRole);
+                
+                // [버그 수정] 모바일 브라우저 화면 잔상 제거 (포커스 강제 해제)
+                document.activeElement.blur();
+                document.getElementById('login-password').blur();
+                
                 document.getElementById('login-password').value = '';
                 UI.loginView.classList.add('hidden');
                 startApp();
@@ -773,6 +779,10 @@
                 currentUserData.nickname = newNick || currentUserData.nickname;
                 currentUserData.birthdate = newBirth;
                 updateSidebarProfile();
+                
+                // [버그 수정] 모바일 잔상 제거용 포커스 해제
+                document.activeElement.blur();
+                
                 Utils.showModal("성공", "내 정보가 수정되었습니다.");
                 document.getElementById('setting-password').value = '';
             } catch(e) {
