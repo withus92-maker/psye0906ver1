@@ -5,6 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>우리의 공간 ♡</title>
     
+    <!-- Android / PWA 기본 연결 -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ffe4e8">
+
+    <!-- iOS (아이폰 Safari) 전용 설정: 상단바 숨김 및 아이콘 지정 -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="우리의 공간">
+    <link rel="apple-touch-icon" href="icon-192.png">
+
     <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Jua&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -144,28 +154,6 @@
     </style>
 </head>
 <body>
-
-    <script>
-        const manifest = {
-            name: "우리의 공간",
-            short_name: "우리의 공간",
-            start_url: ".",
-            display: "standalone",
-            background_color: "#ffe4e8",
-            theme_color: "#ffb3c6",
-            icons: [{
-                src: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2ZmZTRlOCIvPjxwYXRoIGQ9Ik01MCA4NS41Qy0xMCA1MCAyMCAxMCA1MCA0MGMzMC0zMCA2MCA0MCAwIDQ1LjV6IiBmaWxsPSIjZmY4ZmFiIi8+PC9zdmc+",
-                sizes: "192x192",
-                type: "image/svg+xml"
-            }]
-        };
-        const manifestBlob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
-        const manifestUrl = URL.createObjectURL(manifestBlob);
-        const link = document.createElement('link');
-        link.rel = 'manifest';
-        link.href = manifestUrl;
-        document.head.appendChild(link);
-    </script>
 
     <!-- 전역 로더 -->
     <div id="app-loader" class="fixed inset-0 bg-pastel-pink z-[100] flex flex-col items-center justify-center">
