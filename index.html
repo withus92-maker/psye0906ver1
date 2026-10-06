@@ -40,7 +40,6 @@
     </script>
 
     <style>
-        /* 모바일 브라우저 하단 바에 가려지지 않도록 동적 뷰포트(dvh) 적용 */
         html, body {
             height: 100%;
             height: 100dvh;
@@ -49,7 +48,7 @@
             color: #5c4d50;
             margin: 0;
             padding: 0;
-            overflow: hidden; /* 전역 스크롤 방지, 내부 영역만 스크롤 */
+            overflow: hidden; 
             -webkit-tap-highlight-color: transparent;
         }
 
@@ -158,7 +157,7 @@
     <!-- 전역 로더 -->
     <div id="app-loader" class="fixed inset-0 bg-pastel-pink z-[100] flex flex-col items-center justify-center">
         <div class="heart-loader"><div></div></div>
-        <p class="mt-8 text-main-pink font-jua text-xl" id="loader-text">서버와 연결하는 중...</p>
+        <p class="mt-8 text-main-pink font-jua text-xl" id="loader-text">연결하는 중...</p>
     </div>
 
     <!-- 알림 모달 -->
@@ -178,12 +177,18 @@
         <div class="bg-white rounded-3xl p-5 w-full max-w-sm cute-shadow flex flex-col">
             <h3 class="text-lg font-jua text-deep-pink mb-3"><i class="fas fa-edit mr-2"></i>글 수정하기</h3>
             <input type="text" id="edit-input-title" placeholder="제목" class="mb-2 text-sm font-bold bg-gray-50 border-gray-200">
-            <textarea id="edit-input-text" rows="4" placeholder="내용" class="mb-4 text-sm resize-none"></textarea>
+            <textarea id="edit-input-text" rows="5" placeholder="내용" class="mb-4 text-sm resize-none"></textarea>
             <div class="flex gap-2 justify-end">
                 <button id="btn-edit-cancel" class="px-4 py-2 rounded-xl bg-gray-200 text-gray-700 font-bold text-sm">취소</button>
                 <button id="btn-edit-save" class="px-4 py-2 rounded-xl bg-main-pink text-white font-bold text-sm">저장하기</button>
             </div>
         </div>
+    </div>
+
+    <!-- 프로필 사진 원본 보기 모달 (신규 추가) -->
+    <div id="profile-view-modal" class="fixed inset-0 bg-black/90 z-[120] hidden flex items-center justify-center p-4 transition-opacity">
+        <button id="btn-close-profile-view" class="absolute top-6 right-6 text-white text-3xl p-2 z-10 drop-shadow-md"><i class="fas fa-times"></i></button>
+        <img id="profile-view-img" src="" class="max-w-full max-h-[85vh] rounded-2xl object-contain cute-shadow relative cursor-pointer">
     </div>
 
     <!-- 사진 상세 및 댓글 모달 -->
@@ -209,9 +214,8 @@
         </div>
     </div>
 
-    <!-- 심플하게 개선된 로그인 뷰 (모바일 주소창 대응) -->
+    <!-- 로그인 뷰 -->
     <div id="login-view" class="fixed inset-0 bg-pastel-pink z-[80] hidden flex-col items-center justify-center p-5">
-        <!-- 하단 마진(mb-16)을 주어 모바일 주소창/툴바에 폼이 가려지지 않게 중간 위로 배치 -->
         <div class="bg-white rounded-3xl p-7 w-full max-w-sm login-shadow flex flex-col justify-center mb-16 relative z-10">
             <div class="text-center mb-6">
                 <div class="w-16 h-16 mx-auto bg-pastel-pink rounded-full flex items-center justify-center mb-3">
@@ -236,7 +240,6 @@
             </div>
         </div>
         
-        <!-- 장식용 배경 하트 -->
         <i class="fas fa-heart absolute top-10 left-10 text-main-pink/20 text-5xl transform -rotate-12"></i>
         <i class="fas fa-heart absolute bottom-20 right-10 text-main-pink/20 text-6xl transform rotate-12"></i>
     </div>
@@ -252,24 +255,28 @@
         <div id="sidebar-overlay" class="fixed inset-0 bg-black/40"></div>
         <nav id="sidebar" class="fixed top-0 left-0 bottom-0 w-64 bg-white shadow-2xl flex flex-col">
             <div class="bg-pastel-pink p-6 text-center rounded-br-3xl">
-                <div class="w-20 h-20 mx-auto bg-white rounded-full mb-3 flex items-center justify-center overflow-hidden border-4 border-white cute-shadow">
+                <div class="w-20 h-20 mx-auto bg-white rounded-full mb-3 flex items-center justify-center overflow-hidden border-4 border-white cute-shadow cursor-pointer hover:opacity-90" onclick="viewProfilePic(document.getElementById('menu-profile-pic').src)">
                     <img id="menu-profile-pic" src="https://placehold.co/150x150/ffb3c6/ffffff?text=♡" class="w-full h-full object-cover">
                 </div>
                 <h2 id="menu-nickname" class="font-jua text-lg text-deep-pink">닉네임</h2>
                 <p id="menu-role" class="text-xs text-text-light mt-1"></p>
             </div>
             <div class="flex-1 overflow-y-auto py-4">
-                <button class="nav-btn w-full text-left px-6 py-3 text-text-dark hover:bg-pastel-pink/50 transition-colors" data-target="home">
+                <button class="nav-btn w-full text-left px-6 py-3 text-text-dark hover:bg-pastel-pink/50 transition-colors flex items-center" data-target="home">
                     <i class="fas fa-home w-6 text-main-pink text-center mr-2"></i> 홈 화면
                 </button>
-                <button class="nav-btn w-full text-left px-6 py-3 text-text-dark hover:bg-pastel-pink/50 transition-colors" data-target="text-board">
+                <button class="nav-btn w-full text-left px-6 py-3 text-text-dark hover:bg-pastel-pink/50 transition-colors flex items-center" data-target="text-board">
                     <i class="fas fa-pen-nib w-6 text-main-pink text-center mr-2"></i> 이야기 공간
+                    <!-- 새 글/새 댓글 뱃지 (신규 추가) -->
+                    <div id="badge-text-board" class="hidden ml-auto bg-deep-pink text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center justify-center shadow-sm">
+                        <i class="fas fa-heart text-[8px] mr-1"></i><span id="badge-text-board-count">0</span>
+                    </div>
                 </button>
-                <button class="nav-btn w-full text-left px-6 py-3 text-text-dark hover:bg-pastel-pink/50 transition-colors" data-target="photo-board">
+                <button class="nav-btn w-full text-left px-6 py-3 text-text-dark hover:bg-pastel-pink/50 transition-colors flex items-center" data-target="photo-board">
                     <i class="fas fa-image w-6 text-main-pink text-center mr-2"></i> 추억 앨범
                 </button>
                 <div class="my-2 border-t border-gray-100"></div>
-                <button class="nav-btn w-full text-left px-6 py-3 text-text-dark hover:bg-pastel-pink/50 transition-colors" data-target="settings">
+                <button class="nav-btn w-full text-left px-6 py-3 text-text-dark hover:bg-pastel-pink/50 transition-colors flex items-center" data-target="settings">
                     <i class="fas fa-cog w-6 text-main-pink text-center mr-2"></i> 설정
                 </button>
             </div>
@@ -283,13 +290,10 @@
             <!-- 홈 뷰 (대문 사진 역할) -->
             <section id="view-home" class="view-section active h-full relative p-0">
                 <div id="home-bg-container" class="absolute inset-0 bg-cover bg-center z-0 transition-all duration-500" style="background-image: url('https://placehold.co/1080x1920/ffe4e8/ffb3c6?text=Upload+Cover+Photo');">
-                    <!-- 어두운 오버레이 추가로 텍스트 가독성 확보 -->
                     <div class="absolute inset-0 bg-black/20"></div>
                 </div>
                 
-                <!-- 중앙 정렬(justify-center)을 상단 정렬(justify-start)로 변경하고 상단 여백(pt-24) 추가 -->
                 <div class="relative z-10 flex flex-col items-center justify-start h-full pt-24 pb-20 px-4">
-                    <!-- 투명도 60% (bg-white/40 적용) 및 하단 마진(mb-10) 제거 -->
                     <div class="bg-white/40 backdrop-blur-md border border-white/50 p-8 rounded-3xl text-center cute-shadow w-full max-w-sm">
                         <h2 class="text-lg text-white font-bold mb-2 drop-shadow-md">우리가 함께한 지</h2>
                         <div class="font-jua text-5xl text-deep-pink mb-4 drop-shadow-md">
@@ -298,7 +302,6 @@
                         <p class="text-sm text-white font-bold drop-shadow-md" id="dday-date">YYYY.MM.DD 시작</p>
                     </div>
                     
-                    <!-- 카메라 버튼 위치 상향 조정 (하단 메뉴바 회피) -->
                     <div class="absolute bottom-12 right-6">
                         <label class="bg-white text-main-pink w-14 h-14 rounded-full flex items-center justify-center cute-shadow cursor-pointer hover:bg-gray-50 transition-colors shadow-lg">
                             <i class="fas fa-camera text-2xl"></i>
@@ -317,7 +320,7 @@
                     
                     <div class="flex flex-col items-center mb-6">
                         <div class="relative w-24 h-24 mb-2">
-                            <img id="setting-profile-pic" src="" class="w-full h-full rounded-full object-cover border-2 border-main-pink shadow-md">
+                            <img id="setting-profile-pic" src="" class="w-full h-full rounded-full object-cover border-2 border-main-pink shadow-md cursor-pointer" onclick="viewProfilePic(this.src)">
                             <label class="absolute bottom-0 right-0 bg-deep-pink text-white w-8 h-8 rounded-full flex items-center justify-center border-2 border-white cursor-pointer shadow-sm">
                                 <i class="fas fa-camera text-sm"></i>
                                 <input type="file" id="input-profile-pic" accept="image/*" class="hidden">
@@ -398,10 +401,10 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
         import { getDatabase, ref, set, get, update, remove, onValue, push } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js";
 
-        // 사용자 제공 Firebase 설정
+        // 사용자 제공 Firebase 설정 (실시간 데이터베이스 URL 포함)
         const firebaseConfig = {
             apiKey: "AIzaSyAZ6SfOKBCftecei_iFGD3-Moen-6AEgBs",
             authDomain: "psye1-65fb3.firebaseapp.com",
@@ -430,9 +433,12 @@
         let coupleData = {};
         let allUsersData = { male: null, female: null };
         let unsubscribes = [];
+        let currentPostsList = [];  // 새롭게 추가: 게시물 검색 및 뱃지 체크용 글로벌 리스트
         let currentPhotosList = []; 
         let currentPhotoModalId = null; 
         let editTargetPostId = null;
+        // 뱃지 계산을 위해 마지막으로 일기장을 확인한 시간을 저장
+        let lastViewedTextBoard = parseInt(localStorage.getItem(`couple_app_last_viewed_board_${currentAppId}`) || '0');
 
         const basePath = `data/couple`;
         const usersRef = ref(db, `${basePath}/accounts`);
@@ -485,6 +491,13 @@
                 UI.headerTitle.innerText = title;
                 UI.sidebar.classList.remove('open');
                 UI.sidebarOverlay.classList.remove('open');
+
+                // 일기장(text-board)을 열 때, 마지막 열람 시간 업데이트 및 뱃지 갱신
+                if(targetId === 'text-board') {
+                    lastViewedTextBoard = Date.now();
+                    localStorage.setItem(`couple_app_last_viewed_board_${currentAppId}`, lastViewedTextBoard.toString());
+                    updateTextBoardBadge();
+                }
             },
 
             formatDate: (timestamp) => {
@@ -528,7 +541,7 @@
             }
         };
 
-        // 로그인 플로우 시작 (토큰 충돌 방지를 위해 곧바로 signInAnonymously 호출)
+        // 로그인 플로우
         signInAnonymously(auth).then(() => {
             checkCoupleAppSetup();
         }).catch(err => {
@@ -616,16 +629,14 @@
                 currentUserData = allUsersData[selectedLoginRole];
                 sessionStorage.setItem(`couple_role_${currentAppId}`, currentRole);
                 
-                // [버그 수정] 모바일 브라우저 화면 잔상 제거 (포커스 강제 해제)
                 document.activeElement.blur();
                 document.getElementById('login-password').blur();
-                
                 document.getElementById('login-password').value = '';
+                
                 UI.loginView.classList.add('hidden');
                 startApp();
             } else {
                 statusMsg.innerText = "비밀번호가 일치하지 않습니다.";
-                // 2초 뒤에 에러 메시지가 자동으로 사라지도록 처리
                 setTimeout(() => {
                     if (statusMsg.innerText === "비밀번호가 일치하지 않습니다.") {
                         statusMsg.innerText = "";
@@ -662,7 +673,9 @@
                         posts.push({ id: child.key, ...child.val() });
                     });
                     posts.sort((a, b) => b.timestamp - a.timestamp);
+                    currentPostsList = posts;
                     renderTextBoard(posts);
+                    updateTextBoardBadge();
                 })
             );
 
@@ -686,6 +699,43 @@
                     }
                 })
             );
+        }
+
+        // 새 글/댓글 뱃지 계산 업데이트
+        function updateTextBoardBadge() {
+            const isCurrentlyViewing = document.getElementById('view-text-board').classList.contains('active');
+            
+            // 현재 화면을 보고 있다면 시간을 지금으로 업데이트
+            if (isCurrentlyViewing) {
+                lastViewedTextBoard = Date.now();
+                localStorage.setItem(`couple_app_last_viewed_board_${currentAppId}`, lastViewedTextBoard.toString());
+            }
+
+            let newCount = 0;
+            currentPostsList.forEach(post => {
+                // 상대방이 작성한 글이 마지막 열람 시간보다 이후일 경우
+                if (post.authorRole !== currentRole && post.timestamp > lastViewedTextBoard) {
+                    newCount++;
+                }
+                // 상대방이 작성한 댓글 계산
+                if (post.comments) {
+                    post.comments.forEach(c => {
+                        if (c.authorRole !== currentRole && c.timestamp > lastViewedTextBoard) {
+                            newCount++;
+                        }
+                    });
+                }
+            });
+
+            const badge = document.getElementById('badge-text-board');
+            const badgeCount = document.getElementById('badge-text-board-count');
+            
+            if (newCount > 0 && !isCurrentlyViewing) {
+                badgeCount.innerText = newCount;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
         }
 
         // 대문(홈) 사진 업로드
@@ -777,7 +827,6 @@
                 currentUserData.birthdate = newBirth;
                 updateSidebarProfile();
                 
-                // [버그 수정] 모바일 잔상 제거용 포커스 해제
                 document.activeElement.blur();
                 
                 Utils.showModal("성공", "내 정보가 수정되었습니다.");
@@ -790,7 +839,7 @@
         document.getElementById('input-profile-pic').onchange = (e) => {
             const file = e.target.files[0];
             if(!file) return;
-            Utils.resizeImage(file, 150, 0.8, async (base64) => {
+            Utils.resizeImage(file, 200, 0.8, async (base64) => {
                 try {
                     let updateData = {};
                     updateData[`${currentRole}/profilePic`] = base64;
@@ -811,6 +860,21 @@
                 Utils.showModal("성공", "커플 정보가 수정되었습니다.");
             } catch(e) {
                 Utils.showModal("오류", "저장에 실패했습니다.");
+            }
+        };
+
+        // 프로필 사진 원본 뷰 모달 관련
+        window.viewProfilePic = (imgUrl) => {
+            // 기본 더미 이미지일 경우는 확대하지 않음
+            if(!imgUrl || imgUrl.includes('placehold.co')) return;
+            document.getElementById('profile-view-img').src = imgUrl;
+            document.getElementById('profile-view-modal').classList.remove('hidden');
+        };
+
+        // 바탕 터치 시 닫기
+        document.getElementById('profile-view-modal').onclick = (e) => {
+            if (e.target.id === 'profile-view-modal' || e.target.closest('#btn-close-profile-view')) {
+                document.getElementById('profile-view-modal').classList.add('hidden');
             }
         };
 
@@ -835,24 +899,27 @@
                         const cIsMine = c.authorRole === currentRole;
                         const cAuthorData = allUsersData[c.authorRole];
                         const cName = cAuthorData ? cAuthorData.nickname : '알 수 없음';
+                        const cDate = c.timestamp ? Utils.formatDate(c.timestamp) : '';
+                        
                         commentsHtml += `
                             <div class="flex items-start gap-2 mt-2 bg-pastel-pink/30 p-2 rounded-lg">
-                                <span class="text-xs font-bold text-main-pink min-w-fit">${cName}</span>
-                                <span class="text-xs text-text-dark flex-1 break-all">${c.text}</span>
-                                ${cIsMine ? `<button class="text-xs text-gray-400 hover:text-red-400" onclick="deleteComment('${post.id}', ${idx})"><i class="fas fa-times"></i></button>` : ''}
+                                <div class="flex flex-col min-w-fit mt-0.5">
+                                    <span class="text-xs font-bold text-main-pink">${cName}</span>
+                                    <span class="text-[9px] text-gray-400 leading-tight">${cDate}</span>
+                                </div>
+                                <span class="text-xs text-text-dark flex-1 break-all mt-0.5">${c.text}</span>
+                                ${cIsMine ? `<button class="text-xs text-gray-400 hover:text-red-400 mt-0.5" onclick="deleteComment('${post.id}', ${idx})"><i class="fas fa-times"></i></button>` : ''}
                             </div>
                         `;
                     });
                 }
 
-                const safeTitle = post.title ? post.title.replace(/"/g, '&quot;') : '';
-                const safeText = post.text ? post.text.replace(/"/g, '&quot;') : '';
-
+                // ID만 넘기도록 변경하여 따옴표/줄바꿈 문법 오류 방지
                 const html = `
                     <div class="bg-white rounded-2xl p-4 cute-shadow">
                         <div class="flex items-center justify-between mb-3">
                             <div class="flex items-center gap-2">
-                                <img src="${profileImg}" class="w-8 h-8 rounded-full object-cover border border-pastel-pink">
+                                <img src="${profileImg}" class="w-8 h-8 rounded-full object-cover border border-pastel-pink cursor-pointer hover:opacity-80 transition-opacity" onclick="viewProfilePic('${profileImg}')">
                                 <div>
                                     <div class="text-sm font-bold text-text-dark">${authorName}</div>
                                     <div class="text-[10px] text-text-light">${Utils.formatDate(post.timestamp)}</div>
@@ -860,7 +927,7 @@
                             </div>
                             ${isMine ? `
                             <div class="flex gap-2">
-                                <button class="text-xs text-gray-400 hover:text-main-pink font-bold" onclick="openEditModal('${post.id}', '${safeTitle}', '${safeText}')">수정</button>
+                                <button class="text-xs text-gray-400 hover:text-main-pink font-bold" onclick="openEditModal('${post.id}')">수정</button>
                                 <button class="text-xs text-gray-400 hover:text-red-400 font-bold" onclick="deletePost('${post.id}')">삭제</button>
                             </div>
                             ` : ''}
@@ -905,10 +972,14 @@
             });
         };
 
-        window.openEditModal = (postId, currentTitle, currentText) => {
+        // 수정 버그 해결: HTML 문자열 안에서 파라미터를 넘기지 않고, ID로 원본 리스트에서 검색
+        window.openEditModal = (postId) => {
+            const post = currentPostsList.find(p => p.id === postId);
+            if(!post) return;
+            
             editTargetPostId = postId;
-            document.getElementById('edit-input-title').value = currentTitle;
-            document.getElementById('edit-input-text').value = currentText;
+            document.getElementById('edit-input-title').value = post.title || '';
+            document.getElementById('edit-input-text').value = post.text || '';
             document.getElementById('edit-modal').classList.remove('hidden');
         };
 
@@ -928,6 +999,7 @@
                         title: newTitle, text: newText 
                     });
                     document.getElementById('edit-modal').classList.add('hidden');
+                    editTargetPostId = null;
                 } catch (e) {
                     Utils.showModal("오류", "수정에 실패했습니다.");
                 }
@@ -1038,11 +1110,16 @@
                 const cIsMine = c.authorRole === currentRole;
                 const cAuthorData = allUsersData[c.authorRole];
                 const cName = cAuthorData ? cAuthorData.nickname : '알 수 없음';
+                const cDate = c.timestamp ? Utils.formatDate(c.timestamp) : '';
+                
                 const html = `
                     <div class="flex items-start gap-2 bg-pastel-pink/20 p-2 rounded-lg mb-2">
-                        <span class="text-xs font-bold text-main-pink min-w-fit">${cName}</span>
-                        <span class="text-xs text-text-dark flex-1 break-all">${c.text}</span>
-                        ${cIsMine ? `<button class="text-xs text-gray-400 hover:text-red-400" onclick="deletePhotoComment('${photo.id}', ${idx})"><i class="fas fa-times"></i></button>` : ''}
+                        <div class="flex flex-col min-w-fit mt-0.5">
+                            <span class="text-xs font-bold text-main-pink">${cName}</span>
+                            <span class="text-[9px] text-gray-400 leading-tight">${cDate}</span>
+                        </div>
+                        <span class="text-xs text-text-dark flex-1 break-all mt-0.5">${c.text}</span>
+                        ${cIsMine ? `<button class="text-xs text-gray-400 hover:text-red-400 mt-0.5" onclick="deletePhotoComment('${photo.id}', ${idx})"><i class="fas fa-times"></i></button>` : ''}
                     </div>
                 `;
                 commentsContainer.insertAdjacentHTML('beforeend', html);
