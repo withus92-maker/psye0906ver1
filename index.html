@@ -3,17 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>우리의 공간 ♡</title>
     
     <!-- Android / PWA 기본 연결 -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#ffe4e8">
 
-    <!-- iOS (아이폰 Safari) 전용 설정: 상단바 숨김 및 아이콘 지정 -->
+    <!-- iOS (아이폰 Safari) 전용 설정 -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="우리의 공간">
     <link rel="apple-touch-icon" href="icon-192.png">
+    
+    <title>우리의 공간 ♡</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Jua&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -28,7 +29,12 @@
                         'main-pink': '#ffb3c6',
                         'deep-pink': '#ff8fab',
                         'text-dark': '#5c4d50',
-                        'text-light': '#8a7d80'
+                        'text-light': '#8a7d80',
+                        'pastel-blue': '#e0f2fe',
+                        'pastel-purple': '#f3e8ff',
+                        'main-purple': '#d8b4fe',
+                        'deep-purple': '#a855f7',
+                        'sticker-red': '#ff4d6d'
                     },
                     fontFamily: {
                         'dodum': ['"Gowun Dodum"', 'sans-serif'],
@@ -55,6 +61,7 @@
         ::-webkit-scrollbar { display: none; }
         
         .cute-shadow { box-shadow: 0 4px 15px rgba(255, 143, 171, 0.2); }
+        .purple-shadow { box-shadow: 0 4px 15px rgba(168, 85, 247, 0.15); }
         .login-shadow { box-shadow: 0 10px 25px rgba(255, 143, 171, 0.3); }
         
         .glass-panel {
@@ -75,81 +82,37 @@
             pointer-events: none;
             z-index: 40;
         }
-        #sidebar-overlay.open {
-            opacity: 1;
-            pointer-events: auto;
-        }
+        #sidebar-overlay.open { opacity: 1; pointer-events: auto; }
 
-        .photo-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            padding: 12px;
-        }
-        .photo-item {
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            position: relative;
-            aspect-ratio: 1 / 1;
-        }
-        .photo-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }
+        .photo-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 12px; }
+        .photo-item { background: white; border-radius: 12px; overflow: hidden; position: relative; aspect-ratio: 1 / 1; }
+        .photo-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-        .heart-loader {
-            display: inline-block;
-            position: relative;
-            width: 80px;
-            height: 80px;
-            transform: rotate(45deg);
-            transform-origin: 40px 40px;
-        }
-        .heart-loader div {
-            top: 32px;
-            left: 32px;
-            position: absolute;
-            width: 32px;
-            height: 32px;
-            background: #ff8fab;
-            animation: heart-loader 1.2s infinite cubic-bezier(0.215, 0.61, 0.355, 1);
-        }
-        .heart-loader div:after, .heart-loader div:before {
-            content: " ";
-            position: absolute;
-            display: block;
-            width: 32px;
-            height: 32px;
-            background: #ff8fab;
-        }
+        .bucket-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 12px; }
+        .bucket-card { background: white; border-radius: 16px; position: relative; aspect-ratio: 4 / 5; display: flex; flex-direction: column; cursor: pointer; transition: transform 0.2s; }
+        .bucket-card:active { transform: scale(0.97); }
+
+        .heart-loader { display: inline-block; position: relative; width: 80px; height: 80px; transform: rotate(45deg); transform-origin: 40px 40px; }
+        .heart-loader div { top: 32px; left: 32px; position: absolute; width: 32px; height: 32px; background: #ff8fab; animation: heart-loader 1.2s infinite cubic-bezier(0.215, 0.61, 0.355, 1); }
+        .heart-loader div:after, .heart-loader div:before { content: " "; position: absolute; display: block; width: 32px; height: 32px; background: #ff8fab; }
         .heart-loader div:before { left: -24px; border-radius: 50% 0 0 50%; }
         .heart-loader div:after { top: -24px; border-radius: 50% 50% 0 0; }
-        @keyframes heart-loader {
-            0% { transform: scale(0.95); }
-            5% { transform: scale(1.1); }
-            39% { transform: scale(0.85); }
-            45% { transform: scale(1); }
-            60% { transform: scale(0.95); }
-            100% { transform: scale(0.9); }
-        }
+        @keyframes heart-loader { 0% { transform: scale(0.95); } 5% { transform: scale(1.1); } 39% { transform: scale(0.85); } 45% { transform: scale(1); } 60% { transform: scale(0.95); } 100% { transform: scale(0.9); } }
 
-        .view-section { display: none; padding-bottom: 80px; }
+        .view-section { display: none; height: 100%; overflow-y: auto; }
         .view-section.active { display: block; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        input, textarea, select {
-            outline: none;
-            border: 2px solid #ffe4e8;
-            border-radius: 12px;
-            padding: 10px;
-            width: 100%;
-            transition: border-color 0.2s;
-        }
+        input, textarea, select { outline: none; border: 2px solid #ffe4e8; border-radius: 12px; padding: 10px; width: 100%; transition: border-color 0.2s; }
         input:focus, textarea:focus { border-color: #ffb3c6; }
         button { user-select: none; }
+        
+        .sticker-slot {
+            width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;
+            font-size: 28px; position: relative; cursor: pointer; transition: transform 0.2s;
+        }
+        .sticker-slot:active { transform: scale(0.9); }
+        .sticker-num { position: absolute; font-size: 12px; color: white; font-weight: bold; top: 48%; left: 50%; transform: translate(-50%, -50%); text-shadow: 0px 1px 2px rgba(0,0,0,0.3); font-family: 'Jua', sans-serif;}
     </style>
 </head>
 <body>
@@ -160,15 +123,16 @@
         <p class="mt-8 text-main-pink font-jua text-xl" id="loader-text">연결하는 중...</p>
     </div>
 
-    <!-- 알림 모달 -->
+    <!-- 공통 알림 모달 -->
     <div id="custom-modal" class="fixed inset-0 bg-black/50 z-[110] hidden flex items-center justify-center px-4 transition-opacity">
-        <div class="bg-white rounded-3xl p-6 w-full max-w-sm cute-shadow text-center">
+        <div class="bg-white rounded-3xl p-6 w-full max-w-sm cute-shadow text-center relative overflow-hidden">
             <h3 id="modal-title" class="text-xl font-jua text-deep-pink mb-2">알림</h3>
-            <p id="modal-message" class="text-text-dark mb-6 text-sm"></p>
-            <div id="modal-buttons" class="flex gap-2 justify-center">
+            <p id="modal-message" class="text-text-dark mb-6 text-sm whitespace-pre-wrap leading-relaxed"></p>
+            <div id="modal-buttons" class="flex gap-2 justify-center relative z-10">
                 <button id="modal-btn-cancel" class="hidden px-4 py-2 rounded-xl bg-gray-200 text-gray-700 font-bold w-1/2">취소</button>
-                <button id="modal-btn-confirm" class="px-4 py-2 rounded-xl bg-main-pink text-white font-bold w-full">확인</button>
+                <button id="modal-btn-confirm" class="px-4 py-2 rounded-xl bg-main-pink text-white font-bold w-full shadow-md">확인</button>
             </div>
+            <div id="modal-confetti" class="absolute inset-0 pointer-events-none hidden bg-[url('https://cdn-icons-png.flaticon.com/512/8516/8516248.png')] bg-cover opacity-20"></div>
         </div>
     </div>
 
@@ -185,30 +149,123 @@
         </div>
     </div>
 
-    <!-- 프로필 사진 원본 보기 모달 (신규 추가) -->
+    <!-- 프로필 원본 보기 모달 -->
     <div id="profile-view-modal" class="fixed inset-0 bg-black/90 z-[120] hidden flex items-center justify-center p-4 transition-opacity">
         <button id="btn-close-profile-view" class="absolute top-6 right-6 text-white text-3xl p-2 z-10 drop-shadow-md"><i class="fas fa-times"></i></button>
-        <img id="profile-view-img" src="" class="max-w-full max-h-[85vh] rounded-2xl object-contain cute-shadow relative cursor-pointer">
+        <img id="profile-view-img" src="" class="max-w-full max-h-[85vh] rounded-2xl object-contain shadow-2xl">
     </div>
 
-    <!-- 사진 상세 및 댓글 모달 -->
+    <!-- 사진 상세 모달 (사진첩용) -->
     <div id="photo-modal" class="fixed inset-0 bg-black/90 z-[95] hidden flex-col transition-opacity h-full">
         <div class="flex justify-between items-center p-4">
             <div class="text-white font-jua text-lg">우리의 추억</div>
             <button id="btn-close-photo-modal" class="text-white text-2xl px-2 py-1"><i class="fas fa-times"></i></button>
         </div>
         <div class="flex-1 overflow-hidden flex flex-col">
-            <div class="w-full flex justify-center items-center bg-black min-h-[40vh] max-h-[60vh] overflow-hidden">
+            <div class="w-full flex justify-center items-center bg-black min-h-[40vh] max-h-[55vh] overflow-hidden relative">
                 <img id="photo-modal-img" src="" class="w-full h-full object-contain">
             </div>
             <div class="bg-white rounded-t-3xl mt-[-20px] relative p-5 flex-1 flex flex-col min-h-0">
                 <h3 class="font-jua text-deep-pink text-lg mb-3 shrink-0">댓글</h3>
-                <div id="photo-modal-comments" class="space-y-2 mb-4 overflow-y-auto flex-1">
-                    <!-- JS로 렌더링 -->
-                </div>
+                <div id="photo-modal-comments" class="space-y-2 mb-4 overflow-y-auto flex-1"></div>
                 <div class="flex gap-2 border-t pt-3 border-gray-100 shrink-0 pb-safe">
-                    <input type="text" id="photo-comment-input" placeholder="따뜻한 댓글 남기기..." class="text-sm py-2 px-3 flex-1 border-gray-200">
-                    <button id="btn-add-photo-comment" class="bg-main-pink text-white text-sm px-4 rounded-xl whitespace-nowrap font-bold shadow-sm">등록</button>
+                    <input type="text" id="photo-comment-input" placeholder="댓글 남기기..." class="text-sm py-2 px-3 flex-1 border-gray-200">
+                    <button id="btn-add-photo-comment" class="bg-main-pink text-white text-sm px-4 rounded-xl font-bold shadow-sm">등록</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 칭찬스티커 부여/비밀번호 확인 모달 -->
+    <div id="sticker-action-modal" class="fixed inset-0 bg-black/60 z-[105] hidden flex items-center justify-center px-4">
+        <div class="bg-white rounded-3xl p-6 w-full max-w-sm cute-shadow text-center">
+            <h3 class="text-xl font-jua text-blue-500 mb-2">칭찬스티커 붙이기</h3>
+            <p class="text-xs text-gray-500 mb-4">여자친구만 스티커를 붙여줄 수 있어요!</p>
+            
+            <div id="sticker-step-auth">
+                <input type="password" id="sticker-auth-pass" placeholder="본인 비밀번호 입력" class="mb-4 text-center border-blue-200 focus:border-blue-400">
+                <div class="flex gap-2">
+                    <button class="btn-sticker-cancel px-4 py-2 rounded-xl bg-gray-200 text-gray-700 font-bold w-1/2">취소</button>
+                    <button id="btn-sticker-verify" class="px-4 py-2 rounded-xl bg-blue-500 text-white font-bold w-1/2 shadow-md">확인</button>
+                </div>
+            </div>
+
+            <div id="sticker-step-reason" class="hidden">
+                <input type="text" id="sticker-input-reason" placeholder="칭찬 이유를 짧게 적어주세요!" class="mb-4 text-center border-blue-200 focus:border-blue-400 text-sm">
+                <div class="flex gap-2">
+                    <button class="btn-sticker-cancel px-4 py-2 rounded-xl bg-gray-200 text-gray-700 font-bold w-1/2">취소</button>
+                    <button id="btn-sticker-confirm" class="px-4 py-2 rounded-xl bg-sticker-red text-white font-bold w-1/2 shadow-md">스티커 확정</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 버킷리스트 생성 모달 -->
+    <div id="bucket-add-modal" class="fixed inset-0 bg-black/60 z-[105] hidden flex items-center justify-center px-4">
+        <div class="bg-white rounded-3xl p-5 w-full max-w-sm purple-shadow flex flex-col">
+            <h3 class="text-lg font-jua text-deep-purple mb-3">새로운 버킷리스트</h3>
+            <div class="mb-3">
+                <label class="block text-xs font-bold text-gray-500 mb-1 ml-1">아이콘 선택</label>
+                <div class="flex flex-wrap gap-2 justify-center bg-gray-50 p-2 rounded-xl border border-purple-100" id="bucket-emoji-selector">
+                    <!-- JS Rendering -->
+                </div>
+            </div>
+            <input type="hidden" id="bucket-selected-emoji" value="❤️">
+            <input type="text" id="bucket-input-title" placeholder="무엇을 함께 하고 싶나요?" class="mb-4 text-sm font-bold bg-gray-50 border-purple-200 focus:border-deep-purple">
+            <div class="flex gap-2 justify-end">
+                <button id="btn-bucket-add-cancel" class="px-4 py-2 rounded-xl bg-gray-200 text-gray-700 font-bold text-sm">취소</button>
+                <button id="btn-bucket-add-save" class="px-4 py-2 rounded-xl bg-deep-purple text-white font-bold text-sm shadow-md">추가하기</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 버킷리스트 상세 모달 -->
+    <div id="bucket-detail-modal" class="fixed inset-0 bg-black/80 z-[105] hidden flex-col h-full">
+        <div class="flex justify-between items-center p-4 glass-panel z-10 sticky top-0">
+            <div class="text-deep-purple font-jua text-lg" id="bucket-detail-header-title">버킷리스트</div>
+            <button id="btn-close-bucket-detail" class="text-gray-500 text-2xl px-2 py-1"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="flex-1 overflow-y-auto bg-pastel-purple pb-safe">
+            <div class="bg-white m-4 rounded-3xl overflow-hidden purple-shadow">
+                <!-- 달성 여부 표시 뱃지 -->
+                <div id="bucket-detail-badge" class="absolute top-6 right-6 bg-deep-pink text-white font-jua text-sm px-3 py-1 rounded-full shadow-md hidden z-10 transform rotate-12">달성 완료!</div>
+                
+                <div class="p-6 text-center border-b border-purple-50">
+                    <div class="text-5xl mb-3" id="bucket-detail-emoji">❤️</div>
+                    <h2 class="text-xl font-jua text-text-dark break-all" id="bucket-detail-title">제목</h2>
+                </div>
+                
+                <!-- 사진 영역 -->
+                <div class="relative bg-gray-100 aspect-video flex items-center justify-center group overflow-hidden">
+                    <img id="bucket-detail-photo" src="" class="hidden w-full h-full object-cover">
+                    <div id="bucket-photo-placeholder" class="text-gray-400 text-center">
+                        <i class="fas fa-camera text-3xl mb-2"></i>
+                        <p class="text-xs font-bold">인증 사진 올리기</p>
+                    </div>
+                    <label class="absolute inset-0 cursor-pointer flex items-center justify-center bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <i class="fas fa-upload text-white text-3xl"></i>
+                        <input type="file" id="bucket-upload-photo" accept="image/*" class="hidden">
+                    </label>
+                </div>
+
+                <!-- 달성 버튼 및 삭제 버튼 -->
+                <div class="p-4 flex gap-2 justify-center bg-purple-50 border-b border-purple-100">
+                    <button id="btn-bucket-delete" class="font-jua text-sm px-4 py-2.5 rounded-full shadow-sm transition-all duration-300 bg-white text-gray-400 border-2 border-gray-200 hover:bg-gray-100 hover:text-red-400">
+                        <i class="fas fa-trash-alt"></i> 삭제
+                    </button>
+                    <button id="btn-bucket-achieve" class="flex-1 font-jua text-lg px-6 py-2.5 rounded-full shadow-md transition-all duration-300 bg-white text-deep-purple border-2 border-deep-purple hover:bg-deep-purple hover:text-white">
+                        <i class="fas fa-check-circle mr-2"></i>달성 체크하기
+                    </button>
+                </div>
+
+                <!-- 후기(댓글) 영역 -->
+                <div class="p-4">
+                    <h3 class="font-jua text-main-purple text-base mb-3"><i class="fas fa-comment-dots mr-2"></i>우리의 후기</h3>
+                    <div id="bucket-detail-comments" class="space-y-2 mb-4 max-h-[30vh] overflow-y-auto"></div>
+                    <div class="flex gap-2 mt-2">
+                        <input type="text" id="bucket-comment-input" placeholder="소감을 남겨주세요..." class="text-sm py-2 px-3 flex-1 border-purple-200">
+                        <button id="btn-add-bucket-comment" class="bg-deep-purple text-white text-sm px-4 rounded-xl font-bold shadow-sm whitespace-nowrap">등록</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -216,7 +273,7 @@
 
     <!-- 로그인 뷰 -->
     <div id="login-view" class="fixed inset-0 bg-pastel-pink z-[80] hidden flex-col items-center justify-center p-5">
-        <div class="bg-white rounded-3xl p-7 w-full max-w-sm login-shadow flex flex-col justify-center mb-16 relative z-10">
+        <div class="bg-white rounded-3xl p-7 w-full max-w-sm login-shadow flex flex-col justify-center mb-8 relative z-10">
             <div class="text-center mb-6">
                 <div class="w-16 h-16 mx-auto bg-pastel-pink rounded-full flex items-center justify-center mb-3">
                     <i class="fas fa-heart text-3xl text-main-pink"></i>
@@ -231,107 +288,192 @@
             </div>
 
             <div id="login-form-container">
-                <p id="login-status-msg" class="text-sm text-main-pink mb-2 text-center h-5"></p>
-                <input type="text" id="login-id" placeholder="아이디 입력 (고정)" class="mb-3 bg-gray-50 text-text-light outline-none text-center font-bold" readonly>
-                <input type="password" id="login-password" placeholder="비밀번호 입력 (초기: 1234)" class="mb-6 text-center">
+                <p id="login-status-msg" class="text-sm text-main-pink mb-2 text-center h-5 transition-opacity duration-300"></p>
+                <input type="text" id="login-id" class="hidden" readonly>
+                <input type="password" id="login-password" placeholder="비밀번호 입력 (초기: 1234)" class="mb-6 text-center focus:border-main-pink">
                 <button id="btn-login" class="w-full bg-main-pink hover:bg-deep-pink text-white font-bold py-3.5 rounded-xl transition-colors shadow-md text-lg">
                     입장하기
                 </button>
             </div>
         </div>
-        
         <i class="fas fa-heart absolute top-10 left-10 text-main-pink/20 text-5xl transform -rotate-12"></i>
         <i class="fas fa-heart absolute bottom-20 right-10 text-main-pink/20 text-6xl transform rotate-12"></i>
     </div>
 
     <!-- 메인 앱 영역 -->
-    <div id="main-app" class="hidden h-full flex flex-col relative">
+    <div id="main-app" class="hidden h-full flex flex-col relative bg-[#fffafb]">
+        <!-- 고정 헤더 -->
         <header class="fixed top-0 left-0 right-0 h-14 glass-panel z-30 flex items-center justify-between px-4">
-            <button id="btn-menu" class="text-deep-pink text-2xl p-2"><i class="fas fa-bars"></i></button>
+            <button id="btn-menu" class="text-deep-pink text-2xl p-2 active:scale-90 transition-transform"><i class="fas fa-bars"></i></button>
             <h1 id="header-title" class="font-jua text-xl text-deep-pink">우리의 홈</h1>
             <div class="w-8"></div>
         </header>
 
+        <!-- 사이드바 오버레이 -->
         <div id="sidebar-overlay" class="fixed inset-0 bg-black/40"></div>
+        
+        <!-- 좌측 사이드바 메뉴 -->
         <nav id="sidebar" class="fixed top-0 left-0 bottom-0 w-64 bg-white shadow-2xl flex flex-col">
             <div class="bg-pastel-pink p-6 text-center rounded-br-3xl">
-                <div class="w-20 h-20 mx-auto bg-white rounded-full mb-3 flex items-center justify-center overflow-hidden border-4 border-white cute-shadow cursor-pointer hover:opacity-90" onclick="viewProfilePic(document.getElementById('menu-profile-pic').src)">
+                <div class="w-20 h-20 mx-auto bg-white rounded-full mb-3 flex items-center justify-center overflow-hidden border-4 border-white cute-shadow cursor-pointer hover:opacity-90" onclick="if(currentUserData.profilePic) viewProfilePic(currentUserData.profilePic)">
                     <img id="menu-profile-pic" src="https://placehold.co/150x150/ffb3c6/ffffff?text=♡" class="w-full h-full object-cover">
                 </div>
                 <h2 id="menu-nickname" class="font-jua text-lg text-deep-pink">닉네임</h2>
-                <p id="menu-role" class="text-xs text-text-light mt-1"></p>
             </div>
+            
             <div class="flex-1 overflow-y-auto py-4">
                 <button class="nav-btn w-full text-left px-6 py-3 text-text-dark hover:bg-pastel-pink/50 transition-colors flex items-center" data-target="home">
                     <i class="fas fa-home w-6 text-main-pink text-center mr-2"></i> 홈 화면
                 </button>
-                <button class="nav-btn w-full text-left px-6 py-3 text-text-dark hover:bg-pastel-pink/50 transition-colors flex items-center" data-target="text-board">
+                
+                <button class="nav-btn w-full text-left px-6 py-3 text-text-dark hover:bg-pastel-pink/50 transition-colors flex items-center relative" data-target="text-board">
                     <i class="fas fa-pen-nib w-6 text-main-pink text-center mr-2"></i> 이야기 공간
-                    <!-- 새 글/새 댓글 뱃지 (신규 추가) -->
-                    <div id="badge-text-board" class="hidden ml-auto bg-deep-pink text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center justify-center shadow-sm">
-                        <i class="fas fa-heart text-[8px] mr-1"></i><span id="badge-text-board-count">0</span>
+                    <!-- 알림 하트 뱃지 -->
+                    <div id="badge-text-board" class="hidden absolute right-4 bg-deep-pink text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center shadow-sm">
+                        <i class="fas fa-heart text-[8px] mr-1"></i><span id="badge-text-board-count" class="ml-1">0</span>
                     </div>
                 </button>
+                
                 <button class="nav-btn w-full text-left px-6 py-3 text-text-dark hover:bg-pastel-pink/50 transition-colors flex items-center" data-target="photo-board">
                     <i class="fas fa-image w-6 text-main-pink text-center mr-2"></i> 추억 앨범
                 </button>
+
+                <!-- 신규 메뉴: 칭찬스티커, 버킷리스트 -->
+                <button class="nav-btn w-full text-left px-6 py-3 text-text-dark hover:bg-pastel-blue/50 transition-colors flex items-center" data-target="sticker">
+                    <i class="fas fa-award w-6 text-blue-400 text-center mr-2"></i> 칭찬스티커
+                </button>
+                <button class="nav-btn w-full text-left px-6 py-3 text-text-dark hover:bg-pastel-purple/50 transition-colors flex items-center" data-target="bucket">
+                    <i class="fas fa-list-check w-6 text-deep-purple text-center mr-2"></i> 버킷리스트
+                </button>
+                
                 <div class="my-2 border-t border-gray-100"></div>
                 <button class="nav-btn w-full text-left px-6 py-3 text-text-dark hover:bg-pastel-pink/50 transition-colors flex items-center" data-target="settings">
                     <i class="fas fa-cog w-6 text-main-pink text-center mr-2"></i> 설정
                 </button>
             </div>
+            
             <div class="p-4 border-t border-gray-100 shrink-0 pb-safe">
                 <button id="btn-logout" class="w-full py-2 text-sm text-text-light hover:text-deep-pink transition-colors">로그아웃</button>
             </div>
         </nav>
 
-        <main class="flex-1 mt-14 relative h-[calc(100%-3.5rem)] overflow-y-auto bg-[#fffafb]">
+        <main class="flex-1 mt-14 relative h-[calc(100%-3.5rem)]">
             
-            <!-- 홈 뷰 (대문 사진 역할) -->
-            <section id="view-home" class="view-section active h-full relative p-0">
+            <!-- 홈 뷰 (대문 사진 + 디데이) -->
+            <section id="view-home" class="view-section active p-0 relative h-full">
                 <div id="home-bg-container" class="absolute inset-0 bg-cover bg-center z-0 transition-all duration-500" style="background-image: url('https://placehold.co/1080x1920/ffe4e8/ffb3c6?text=Upload+Cover+Photo');">
-                    <div class="absolute inset-0 bg-black/20"></div>
+                    <div class="absolute inset-0 bg-black/10"></div>
                 </div>
                 
-                <div class="relative z-10 flex flex-col items-center justify-start h-full pt-24 pb-20 px-4">
-                    <div class="bg-white/40 backdrop-blur-md border border-white/50 p-8 rounded-3xl text-center cute-shadow w-full max-w-sm">
-                        <h2 class="text-lg text-white font-bold mb-2 drop-shadow-md">우리가 함께한 지</h2>
-                        <div class="font-jua text-5xl text-deep-pink mb-4 drop-shadow-md">
+                <div class="relative z-10 flex flex-col items-center justify-start h-full pt-16 px-4 pb-20 overflow-y-auto">
+                    <div class="bg-white/60 backdrop-blur-md border border-white/50 p-8 rounded-3xl text-center w-full max-w-sm shadow-xl">
+                        <h2 class="text-lg text-text-dark font-bold mb-2">우리가 함께한 지</h2>
+                        <div class="font-jua text-5xl text-deep-pink mb-4 drop-shadow-sm">
                             <span id="dday-count">D+0</span>
                         </div>
-                        <p class="text-sm text-white font-bold drop-shadow-md" id="dday-date">YYYY.MM.DD 시작</p>
+                        <p class="text-sm text-text-dark font-bold" id="dday-date">설정에서 날짜를 등록해주세요</p>
                     </div>
-                    
-                    <div class="absolute bottom-12 right-6">
-                        <label class="bg-white text-main-pink w-14 h-14 rounded-full flex items-center justify-center cute-shadow cursor-pointer hover:bg-gray-50 transition-colors shadow-lg">
-                            <i class="fas fa-camera text-2xl"></i>
-                            <input type="file" id="input-home-bg" accept="image/*" class="hidden">
-                        </label>
+                </div>
+                
+                <div class="absolute bottom-10 right-6 z-20">
+                    <label class="bg-white text-main-pink w-14 h-14 rounded-full flex items-center justify-center cute-shadow cursor-pointer hover:bg-gray-50 transition-colors shadow-lg active:scale-95">
+                        <i class="fas fa-camera text-2xl"></i>
+                        <input type="file" id="input-home-bg" accept="image/*" class="hidden">
+                    </label>
+                </div>
+            </section>
+
+            <!-- 칭찬스티커 뷰 -->
+            <section id="view-sticker" class="view-section bg-pastel-blue h-full overflow-y-auto">
+                <div class="sticky top-0 bg-pastel-blue/90 backdrop-blur z-20 p-4 border-b border-blue-200 shadow-sm flex justify-between items-end">
+                    <div>
+                        <h2 class="font-jua text-2xl text-blue-600"><i class="fas fa-medal mr-2"></i>칭찬스티커</h2>
+                        <p class="text-[11px] text-blue-400 font-bold mt-1 tracking-tight">남자친구가 착한 일을 하면 스티커를 붙여주세요♡</p>
+                    </div>
+                    <div class="bg-white px-3 py-1 rounded-full shadow-sm text-blue-500 font-bold text-xs">
+                        <span id="sticker-count-display">0</span> / 20
+                    </div>
+                </div>
+                
+                <div class="p-4 pb-24 flex justify-center">
+                    <!-- 포도송이 레이아웃 컨테이너 -->
+                    <div class="flex flex-col items-center gap-3 mt-4" id="sticker-grape-container">
+                        <!-- JS에서 동적 렌더링: 4,4,4,3,3,2 구조 -->
                     </div>
                 </div>
             </section>
 
+            <!-- 버킷리스트 뷰 -->
+            <section id="view-bucket" class="view-section bg-pastel-purple h-full overflow-y-auto">
+                <div class="sticky top-0 bg-pastel-purple/95 backdrop-blur z-20 px-4 pt-4 pb-3 border-b border-purple-200 shadow-sm">
+                    <div class="flex justify-between items-center mb-3">
+                        <h2 class="font-jua text-2xl text-deep-purple"><i class="fas fa-list-check mr-2"></i>버킷리스트</h2>
+                        <button id="btn-show-add-bucket" class="bg-deep-purple text-white text-xs font-bold px-3 py-2 rounded-full shadow-md hover:bg-purple-600 active:scale-95 transition-all">
+                            <i class="fas fa-plus mr-1"></i>신규 추가
+                        </button>
+                    </div>
+                    <!-- 에너지바 -->
+                    <div class="w-full bg-white rounded-full h-4 shadow-inner relative overflow-hidden border border-purple-100">
+                        <div id="bucket-energy-bar" class="bg-gradient-to-r from-main-pink to-deep-purple h-full transition-all duration-700 w-0"></div>
+                        <span id="bucket-energy-text" class="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-gray-700">애정도 0%</span>
+                    </div>
+                </div>
+                
+                <div id="bucket-grid" class="bucket-grid pb-24">
+                    <!-- JS에서 동적 렌더링 -->
+                </div>
+            </section>
+
+            <!-- 텍스트 게시판 뷰 -->
+            <section id="view-text-board" class="view-section p-4 h-full overflow-y-auto pb-24">
+                <div class="flex justify-between items-end mb-4 ml-2">
+                    <h2 class="font-jua text-2xl text-deep-pink"><i class="fas fa-book-heart mr-2"></i>우리의 일기장</h2>
+                </div>
+                
+                <div class="bg-white rounded-2xl p-4 cute-shadow mb-6 border border-pastel-pink">
+                    <input type="text" id="post-input-title" placeholder="제목을 적어주세요" class="mb-2 text-sm font-bold bg-gray-50 border-gray-100 focus:bg-white focus:border-main-pink">
+                    <textarea id="post-input-text" rows="3" placeholder="오늘 무슨 일이 있었나요?" class="mb-2 text-sm resize-none border-gray-100 focus:border-main-pink"></textarea>
+                    <div class="flex justify-end">
+                        <button id="btn-submit-post" class="bg-main-pink hover:bg-deep-pink text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-md transition-colors active:scale-95">글 남기기</button>
+                    </div>
+                </div>
+
+                <div id="post-list" class="space-y-4"></div>
+            </section>
+
+            <!-- 사진 게시판 뷰 -->
+            <section id="view-photo-board" class="view-section relative h-full overflow-y-auto">
+                <div class="sticky top-0 bg-[#fffafb]/90 backdrop-blur z-20 p-4 border-b border-pastel-pink flex justify-between items-center mb-2">
+                    <h2 class="font-jua text-2xl text-deep-pink"><i class="fas fa-camera-retro mr-2"></i>추억 앨범</h2>
+                </div>
+                
+                <div id="photo-grid" class="photo-grid pb-24"></div>
+
+                <label class="fixed bottom-8 right-6 bg-deep-pink text-white w-14 h-14 rounded-full flex items-center justify-center cute-shadow cursor-pointer hover:bg-main-pink transition-colors z-20 shadow-lg active:scale-90">
+                    <i class="fas fa-plus text-2xl"></i>
+                    <input type="file" id="input-upload-photo" accept="image/*" class="hidden">
+                </label>
+            </section>
+
             <!-- 설정 뷰 -->
-            <section id="view-settings" class="view-section p-4">
+            <section id="view-settings" class="view-section p-4 h-full overflow-y-auto pb-24">
                 <h2 class="font-jua text-2xl text-deep-pink mb-4 ml-2"><i class="fas fa-cog mr-2"></i>우리의 정보 설정</h2>
                 
                 <div class="bg-white rounded-3xl p-5 cute-shadow mb-6">
                     <h3 class="font-bold text-main-pink border-b border-pastel-pink pb-2 mb-4">내 정보 수정</h3>
-                    
                     <div class="flex flex-col items-center mb-6">
                         <div class="relative w-24 h-24 mb-2">
                             <img id="setting-profile-pic" src="" class="w-full h-full rounded-full object-cover border-2 border-main-pink shadow-md cursor-pointer" onclick="viewProfilePic(this.src)">
-                            <label class="absolute bottom-0 right-0 bg-deep-pink text-white w-8 h-8 rounded-full flex items-center justify-center border-2 border-white cursor-pointer shadow-sm">
+                            <label class="absolute bottom-0 right-0 bg-deep-pink text-white w-8 h-8 rounded-full flex items-center justify-center border-2 border-white cursor-pointer shadow-sm active:scale-90 transition-transform">
                                 <i class="fas fa-camera text-sm"></i>
                                 <input type="file" id="input-profile-pic" accept="image/*" class="hidden">
                             </label>
                         </div>
                     </div>
-
                     <div class="space-y-4">
                         <div>
                             <label class="block text-xs font-bold text-text-light mb-1 ml-1">닉네임</label>
-                            <input type="text" id="setting-nickname" placeholder="예: 사랑둥이">
+                            <input type="text" id="setting-nickname">
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-text-light mb-1 ml-1">생년월일</label>
@@ -339,9 +481,9 @@
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-text-light mb-1 ml-1">비밀번호 변경</label>
-                            <input type="password" id="setting-password" placeholder="새 비밀번호 입력">
+                            <input type="password" id="setting-password" placeholder="새 비밀번호 (변경시에만 입력)">
                         </div>
-                        <button id="btn-save-my-info" class="w-full bg-main-pink text-white font-bold py-3 rounded-xl mt-2 shadow-md active:bg-deep-pink">
+                        <button id="btn-save-my-info" class="w-full bg-main-pink text-white font-bold py-3 rounded-xl mt-2 shadow-md active:scale-[0.98] transition-transform">
                             내 정보 저장하기
                         </button>
                     </div>
@@ -351,64 +493,29 @@
                     <h3 class="font-bold text-main-pink border-b border-pastel-pink pb-2 mb-4">커플 정보 설정</h3>
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-xs font-bold text-text-light mb-1 ml-1">우리가 만난 날 (D-day 기준)</label>
+                            <label class="block text-xs font-bold text-text-light mb-1 ml-1">우리가 만난 날</label>
                             <input type="date" id="setting-dday">
                         </div>
-                        <button id="btn-save-couple-info" class="w-full bg-white border-2 border-main-pink text-main-pink font-bold py-3 rounded-xl shadow-sm active:bg-pastel-pink">
+                        <button id="btn-save-couple-info" class="w-full bg-white border-2 border-main-pink text-main-pink font-bold py-3 rounded-xl shadow-sm active:bg-pastel-pink transition-colors">
                             커플 정보 저장하기
                         </button>
                     </div>
                 </div>
             </section>
-
-            <!-- 텍스트 게시판 뷰 -->
-            <section id="view-text-board" class="view-section p-4">
-                <div class="flex justify-between items-end mb-4 ml-2">
-                    <h2 class="font-jua text-2xl text-deep-pink"><i class="fas fa-book-heart mr-2"></i>우리의 일기장</h2>
-                </div>
-                
-                <div class="bg-white rounded-2xl p-4 cute-shadow mb-6 border border-pastel-pink">
-                    <input type="text" id="post-input-title" placeholder="제목을 적어주세요" class="mb-2 text-sm font-bold bg-gray-50 border-gray-100 focus:bg-white">
-                    <textarea id="post-input-text" rows="3" placeholder="오늘 무슨 일이 있었나요?" class="mb-2 text-sm resize-none"></textarea>
-                    <div class="flex justify-end">
-                        <button id="btn-submit-post" class="bg-main-pink hover:bg-deep-pink text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-md transition-colors">글 남기기</button>
-                    </div>
-                </div>
-
-                <div id="post-list" class="space-y-4">
-                    <!-- JS에서 렌더링됨 -->
-                </div>
-            </section>
-
-            <!-- 사진 게시판 뷰 -->
-            <section id="view-photo-board" class="view-section p-2 relative min-h-full">
-                <div class="px-2 pt-2 flex justify-between items-center mb-2">
-                    <h2 class="font-jua text-2xl text-deep-pink ml-2"><i class="fas fa-camera-retro mr-2"></i>추억 앨범</h2>
-                </div>
-                
-                <div id="photo-grid" class="photo-grid pb-20">
-                    <!-- JS에서 렌더링됨 -->
-                </div>
-
-                <!-- 업로드 플로팅 버튼 -->
-                <label class="fixed bottom-8 right-6 bg-deep-pink text-white w-14 h-14 rounded-full flex items-center justify-center cute-shadow cursor-pointer hover:bg-main-pink transition-colors z-20 shadow-lg">
-                    <i class="fas fa-plus text-2xl"></i>
-                    <input type="file" id="input-upload-photo" accept="image/*" class="hidden">
-                </label>
-            </section>
         </main>
     </div>
 
+    <!-- Firebase Realtime Database 연동 스크립트 -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
         import { getDatabase, ref, set, get, update, remove, onValue, push } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js";
 
-        // 사용자 제공 Firebase 설정 (실시간 데이터베이스 URL 포함)
+        // ★ 유저의 Firebase Realtime Database 설정값
         const firebaseConfig = {
             apiKey: "AIzaSyAZ6SfOKBCftecei_iFGD3-Moen-6AEgBs",
             authDomain: "psye1-65fb3.firebaseapp.com",
-            databaseURL: "https://psye1-65fb3-default-rtdb.asia-southeast1.firebasedatabase.app",
+            databaseURL: "https://psye1-65fb3-default-rtdb.asia-southeast1.firebasedatabase.app/",
             projectId: "psye1-65fb3",
             storageBucket: "psye1-65fb3.firebasestorage.app",
             messagingSenderId: "198807152212",
@@ -416,7 +523,6 @@
         };
 
         const currentAppId = 'couple-app-psye1';
-
         let app, db, auth;
         try {
             app = initializeApp(firebaseConfig);
@@ -427,24 +533,34 @@
             document.getElementById('loader-text').innerText = "파이어베이스 초기화 실패";
         }
 
-        // 상태 변수 관리
+        // --- 전역 상태 변수 ---
         let currentRole = null; 
         let currentUserData = null;
         let coupleData = {};
         let allUsersData = { male: null, female: null };
-        let unsubscribes = [];
-        let currentPostsList = [];  // 새롭게 추가: 게시물 검색 및 뱃지 체크용 글로벌 리스트
+        
+        let currentPostsList = [];  
         let currentPhotosList = []; 
-        let currentPhotoModalId = null; 
-        let editTargetPostId = null;
-        // 뱃지 계산을 위해 마지막으로 일기장을 확인한 시간을 저장
-        let lastViewedTextBoard = parseInt(localStorage.getItem(`couple_app_last_viewed_board_${currentAppId}`) || '0');
+        let currentStickers = {};
+        let currentBuckets = [];
 
+        let unsubscribes = [];
+        let currentPhotoModalId = null; 
+        let currentBucketModalId = null;
+        let editTargetPostId = null;
+        let stickerTargetSlot = null;
+        
+        let lastViewedTextBoard = 0;
+        const EMOJIS = ['❤️', '🍔', '✈️', '🎮', '🏕️', '🎬', '🛍️', '🎤', '☕', '🎡', '🎂', '🥂', '📸', '🎵', '🏖️', '🎢', '🎨', '🚙', '💍', '🏡'];
+
+        // --- DB 경로 ---
         const basePath = `data/couple`;
         const usersRef = ref(db, `${basePath}/accounts`);
         const settingsRef = ref(db, `${basePath}/settings/main`);
         const postsRef = ref(db, `${basePath}/posts`);
         const photosRef = ref(db, `${basePath}/photos`);
+        const stickersRef = ref(db, `${basePath}/stickers`);
+        const bucketsRef = ref(db, `${basePath}/buckets`);
 
         const UI = {
             loader: document.getElementById('app-loader'),
@@ -460,16 +576,19 @@
 
         let selectedLoginRole = 'male'; 
 
-        // 유틸리티 함수
+        // --- 유틸리티 ---
         const Utils = {
-            showModal: (title, message, isConfirm = false, onConfirm = null) => {
+            showModal: (title, message, isConfirm = false, onConfirm = null, showConfetti = false) => {
                 document.getElementById('modal-title').innerText = title;
                 document.getElementById('modal-message').innerText = message;
                 const modal = document.getElementById('custom-modal');
                 const btnCancel = document.getElementById('modal-btn-cancel');
                 const btnConfirm = document.getElementById('modal-btn-confirm');
+                const confetti = document.getElementById('modal-confetti');
                 
                 modal.classList.remove('hidden');
+                if(showConfetti) confetti.classList.remove('hidden');
+                else confetti.classList.add('hidden');
                 
                 if (isConfirm) {
                     btnCancel.classList.remove('hidden');
@@ -479,8 +598,9 @@
                     btnConfirm.classList.replace('w-1/2', 'w-full');
                 }
 
-                const close = () => modal.classList.add('hidden');
+                const close = () => { modal.classList.add('hidden'); confetti.classList.add('hidden'); };
                 
+                // 이벤트 리스너 중복 방지
                 btnConfirm.onclick = () => { close(); if(onConfirm) onConfirm(); };
                 btnCancel.onclick = () => close();
             },
@@ -492,10 +612,9 @@
                 UI.sidebar.classList.remove('open');
                 UI.sidebarOverlay.classList.remove('open');
 
-                // 일기장(text-board)을 열 때, 마지막 열람 시간 업데이트 및 뱃지 갱신
                 if(targetId === 'text-board') {
                     lastViewedTextBoard = Date.now();
-                    localStorage.setItem(`couple_app_last_viewed_board_${currentAppId}`, lastViewedTextBoard.toString());
+                    localStorage.setItem(`couple_app_last_viewed_${currentRole}`, lastViewedTextBoard.toString());
                     updateTextBoardBadge();
                 }
             },
@@ -503,7 +622,10 @@
             formatDate: (timestamp) => {
                 if(!timestamp) return '';
                 const d = new Date(timestamp);
-                return `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+                const ampm = d.getHours() >= 12 ? '오후' : '오전';
+                const h = d.getHours() % 12 || 12;
+                const m = String(d.getMinutes()).padStart(2,'0');
+                return `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')} ${ampm} ${h}:${m}`;
             },
 
             resizeImage: (file, maxWidth, quality, callback) => {
@@ -514,12 +636,8 @@
                         const canvas = document.createElement('canvas');
                         let width = img.width;
                         let height = img.height;
-                        if (width > maxWidth) {
-                            height = Math.round((height * maxWidth) / width);
-                            width = maxWidth;
-                        }
-                        canvas.width = width;
-                        canvas.height = height;
+                        if (width > maxWidth) { height = Math.round((height * maxWidth) / width); width = maxWidth; }
+                        canvas.width = width; canvas.height = height;
                         const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0, width, height);
                         callback(canvas.toDataURL('image/jpeg', quality));
@@ -531,21 +649,23 @@
 
             calculateDday: (startDateStr) => {
                 if(!startDateStr) return "설정 필요";
-                const start = new Date(startDateStr);
-                start.setHours(0,0,0,0);
-                const now = new Date();
-                now.setHours(0,0,0,0);
+                const start = new Date(startDateStr); start.setHours(0,0,0,0);
+                const now = new Date(); now.setHours(0,0,0,0);
                 const diff = now - start;
                 const days = Math.floor(diff / (1000 * 60 * 60 * 24)) + 1;
                 return `D+${days}`;
+            },
+
+            escapeHtml: (text) => {
+                if(!text) return '';
+                return text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
             }
         };
 
-        // 로그인 플로우
+        // --- 로그인 및 초기 설정 ---
         signInAnonymously(auth).then(() => {
             checkCoupleAppSetup();
         }).catch(err => {
-            console.error("Login Error:", err);
             UI.loader.classList.add('hidden');
             Utils.showModal("오류", "데이터베이스 연결에 실패했습니다.");
         });
@@ -557,10 +677,7 @@
                 onValue(settingsRef, (snapshot) => {
                     if (snapshot.exists()) {
                         coupleData = snapshot.val();
-                        if (currentRole) {
-                            renderHome();
-                            renderSettingsInput();
-                        }
+                        if (currentRole) { renderHome(); renderSettingsInput(); }
                     }
                 });
 
@@ -568,7 +685,6 @@
                     UI.loader.classList.add('hidden');
                     if (snapshot.exists()) {
                         allUsersData = snapshot.val();
-                        
                         if (savedRole && allUsersData[savedRole]) {
                             currentRole = savedRole;
                             currentUserData = allUsersData[savedRole];
@@ -580,16 +696,13 @@
                     } else {
                         // 최초 생성
                         set(usersRef, {
-                            male: { id: 'male', pass: '1234', nickname: '남자친구', birthdate: '', profilePic: '' },
-                            female: { id: 'female', pass: '1234', nickname: '여자친구', birthdate: '', profilePic: '' }
+                            male: { pass: '1234', nickname: '남자친구', birthdate: '', profilePic: '' },
+                            female: { pass: '1234', nickname: '여자친구', birthdate: '', profilePic: '' }
                         }).then(() => {
                             set(settingsRef, { dday: '', bgImage: '' });
                             Utils.showModal("환영합니다", "초기 데이터가 생성되었습니다.\n기본 비밀번호는 '1234' 입니다.");
                         });
                     }
-                }, (error) => {
-                    UI.loader.classList.add('hidden');
-                    Utils.showModal("오류", "데이터베이스 권한 오류입니다. Firebase 보안 규칙을 확인해주세요.");
                 });
             } catch (e) {
                 console.error(e);
@@ -598,38 +711,28 @@
 
         UI.tabs.male.onclick = () => {
             selectedLoginRole = 'male';
-            UI.tabs.male.classList.replace('text-text-light', 'text-main-pink');
-            UI.tabs.male.classList.add('bg-pastel-pink');
-            UI.tabs.female.classList.replace('text-main-pink', 'text-text-light');
-            UI.tabs.female.classList.remove('bg-pastel-pink');
+            UI.tabs.male.classList.replace('text-text-light', 'text-main-pink'); UI.tabs.male.classList.add('bg-pastel-pink');
+            UI.tabs.female.classList.replace('text-main-pink', 'text-text-light'); UI.tabs.female.classList.remove('bg-pastel-pink');
             document.getElementById('login-id').value = 'male';
         };
         UI.tabs.female.onclick = () => {
             selectedLoginRole = 'female';
-            UI.tabs.female.classList.replace('text-text-light', 'text-main-pink');
-            UI.tabs.female.classList.add('bg-pastel-pink');
-            UI.tabs.male.classList.replace('text-main-pink', 'text-text-light');
-            UI.tabs.male.classList.remove('bg-pastel-pink');
+            UI.tabs.female.classList.replace('text-text-light', 'text-main-pink'); UI.tabs.female.classList.add('bg-pastel-pink');
+            UI.tabs.male.classList.replace('text-main-pink', 'text-text-light'); UI.tabs.male.classList.remove('bg-pastel-pink');
             document.getElementById('login-id').value = 'female';
         };
-        
         document.getElementById('login-id').value = 'male';
 
         document.getElementById('btn-login').onclick = () => {
             const pass = document.getElementById('login-password').value;
             const statusMsg = document.getElementById('login-status-msg');
             
-            if (!allUsersData[selectedLoginRole]) {
-                statusMsg.innerText = "계정 정보를 찾을 수 없습니다."; 
-                setTimeout(() => { statusMsg.innerText = ""; }, 2000);
-                return;
-            }
             if (allUsersData[selectedLoginRole].pass === pass) {
                 currentRole = selectedLoginRole;
                 currentUserData = allUsersData[selectedLoginRole];
                 sessionStorage.setItem(`couple_role_${currentAppId}`, currentRole);
                 
-                document.activeElement.blur();
+                document.activeElement.blur(); 
                 document.getElementById('login-password').blur();
                 document.getElementById('login-password').value = '';
                 
@@ -637,41 +740,35 @@
                 startApp();
             } else {
                 statusMsg.innerText = "비밀번호가 일치하지 않습니다.";
-                setTimeout(() => {
-                    if (statusMsg.innerText === "비밀번호가 일치하지 않습니다.") {
-                        statusMsg.innerText = "";
-                    }
-                }, 2000);
+                setTimeout(() => { if (statusMsg.innerText === "비밀번호가 일치하지 않습니다.") statusMsg.innerText = ""; }, 2000);
             }
         };
 
         document.getElementById('btn-logout').onclick = () => {
             Utils.showModal("로그아웃", "로그아웃 하시겠습니까?", true, () => {
                 sessionStorage.removeItem(`couple_role_${currentAppId}`);
-                currentRole = null;
-                currentUserData = null;
-                unsubscribes.forEach(unsub => unsub()); 
-                unsubscribes = [];
-                UI.mainApp.classList.add('hidden');
-                UI.loginView.classList.remove('hidden');
-                UI.sidebar.classList.remove('open');
-                UI.sidebarOverlay.classList.remove('open');
+                currentRole = null; currentUserData = null;
+                unsubscribes.forEach(unsub => unsub()); unsubscribes = [];
+                UI.mainApp.classList.add('hidden'); UI.loginView.classList.remove('hidden');
+                UI.sidebar.classList.remove('open'); UI.sidebarOverlay.classList.remove('open');
             });
         };
 
+        // --- 앱 메인 실행 및 구독 ---
         function startApp() {
+            lastViewedTextBoard = parseInt(localStorage.getItem(`couple_app_last_viewed_${currentRole}`) || '0');
+
             UI.mainApp.classList.remove('hidden');
             Utils.showView('home', '우리의 홈');
             updateSidebarProfile();
             renderHome();
             renderSettingsInput();
 
+            // 게시판 구독
             unsubscribes.push(
                 onValue(postsRef, (snapshot) => {
                     let posts = [];
-                    snapshot.forEach(child => {
-                        posts.push({ id: child.key, ...child.val() });
-                    });
+                    snapshot.forEach(child => { posts.push({ id: child.key, ...child.val() }); });
                     posts.sort((a, b) => b.timestamp - a.timestamp);
                     currentPostsList = posts;
                     renderTextBoard(posts);
@@ -679,88 +776,67 @@
                 })
             );
 
+            // 사진첩 구독
             unsubscribes.push(
                 onValue(photosRef, (snapshot) => {
                     let photos = [];
-                    snapshot.forEach(child => {
-                        photos.push({ id: child.key, ...child.val() });
-                    });
+                    snapshot.forEach(child => { photos.push({ id: child.key, ...child.val() }); });
                     photos.sort((a, b) => b.timestamp - a.timestamp);
                     currentPhotosList = photos;
                     renderPhotoBoard(photos);
                     
                     if (currentPhotoModalId && !document.getElementById('photo-modal').classList.contains('hidden')) {
                         const updatedPhoto = currentPhotosList.find(p => p.id === currentPhotoModalId);
-                        if (updatedPhoto) {
-                            renderPhotoComments(updatedPhoto);
-                        } else {
-                            document.getElementById('photo-modal').classList.add('hidden');
-                        }
+                        if (updatedPhoto) renderPhotoComments(updatedPhoto);
+                        else document.getElementById('photo-modal').classList.add('hidden');
+                    }
+                })
+            );
+
+            // 칭찬스티커 구독
+            unsubscribes.push(
+                onValue(stickersRef, (snapshot) => {
+                    currentStickers = snapshot.val() || {};
+                    renderStickers();
+                })
+            );
+
+            // 버킷리스트 구독
+            unsubscribes.push(
+                onValue(bucketsRef, (snapshot) => {
+                    let buckets = [];
+                    snapshot.forEach(child => { buckets.push({ id: child.key, ...child.val() }); });
+                    buckets.sort((a, b) => b.timestamp - a.timestamp);
+                    currentBuckets = buckets;
+                    renderBuckets();
+
+                    if(currentBucketModalId && !document.getElementById('bucket-detail-modal').classList.contains('hidden')) {
+                        const updatedBucket = currentBuckets.find(b => b.id === currentBucketModalId);
+                        if(updatedBucket) renderBucketDetail(updatedBucket);
+                        else document.getElementById('bucket-detail-modal').classList.add('hidden');
                     }
                 })
             );
         }
 
-        // 새 글/댓글 뱃지 계산 업데이트
-        function updateTextBoardBadge() {
-            const isCurrentlyViewing = document.getElementById('view-text-board').classList.contains('active');
-            
-            // 현재 화면을 보고 있다면 시간을 지금으로 업데이트
-            if (isCurrentlyViewing) {
-                lastViewedTextBoard = Date.now();
-                localStorage.setItem(`couple_app_last_viewed_board_${currentAppId}`, lastViewedTextBoard.toString());
+        // --- 공통 UI 기능 ---
+        window.viewProfilePic = (imgUrl) => {
+            if(!imgUrl || imgUrl.includes('placehold.co')) return;
+            document.getElementById('profile-view-img').src = imgUrl;
+            document.getElementById('profile-view-modal').classList.remove('hidden');
+        };
+        document.getElementById('profile-view-modal').onclick = (e) => {
+            if (e.target.id === 'profile-view-modal' || e.target.closest('#btn-close-profile-view')) {
+                document.getElementById('profile-view-modal').classList.add('hidden');
             }
-
-            let newCount = 0;
-            currentPostsList.forEach(post => {
-                // 상대방이 작성한 글이 마지막 열람 시간보다 이후일 경우
-                if (post.authorRole !== currentRole && post.timestamp > lastViewedTextBoard) {
-                    newCount++;
-                }
-                // 상대방이 작성한 댓글 계산
-                if (post.comments) {
-                    post.comments.forEach(c => {
-                        if (c.authorRole !== currentRole && c.timestamp > lastViewedTextBoard) {
-                            newCount++;
-                        }
-                    });
-                }
-            });
-
-            const badge = document.getElementById('badge-text-board');
-            const badgeCount = document.getElementById('badge-text-board-count');
-            
-            if (newCount > 0 && !isCurrentlyViewing) {
-                badgeCount.innerText = newCount;
-                badge.classList.remove('hidden');
-            } else {
-                badge.classList.add('hidden');
-            }
-        }
-
-        // 대문(홈) 사진 업로드
-        document.getElementById('input-home-bg').onchange = (e) => {
-            const file = e.target.files[0];
-            if(!file) return;
-            Utils.showModal("업로드 중", "사진을 저장하고 있습니다...");
-            Utils.resizeImage(file, 1080, 0.7, async (base64) => {
-                try {
-                    await update(settingsRef, { bgImage: base64 });
-                    document.getElementById('custom-modal').classList.add('hidden');
-                } catch(err) {
-                    Utils.showModal("오류", "사진 저장에 실패했습니다.");
-                }
-            });
         };
 
-        // 메뉴 조작
+        // 메뉴 이동
         document.getElementById('btn-menu').onclick = () => {
-            UI.sidebar.classList.add('open');
-            UI.sidebarOverlay.classList.add('open');
+            UI.sidebar.classList.add('open'); UI.sidebarOverlay.classList.add('open');
         };
         UI.sidebarOverlay.onclick = () => {
-            UI.sidebar.classList.remove('open');
-            UI.sidebarOverlay.classList.remove('open');
+            UI.sidebar.classList.remove('open'); UI.sidebarOverlay.classList.remove('open');
         };
         UI.navBtns.forEach(btn => {
             btn.onclick = (e) => {
@@ -772,12 +848,10 @@
 
         function updateSidebarProfile() {
             document.getElementById('menu-nickname').innerText = currentUserData.nickname || (currentRole === 'male' ? '남자친구' : '여자친구');
-            document.getElementById('menu-role').innerText = currentRole === 'male' ? 'Male' : 'Female';
-            if (currentUserData.profilePic) {
-                document.getElementById('menu-profile-pic').src = currentUserData.profilePic;
-            }
+            if (currentUserData.profilePic) document.getElementById('menu-profile-pic').src = currentUserData.profilePic;
         }
 
+        // --- 홈 화면 ---
         function renderHome() {
             const counter = document.getElementById('dday-count');
             const dateLabel = document.getElementById('dday-date');
@@ -786,97 +860,382 @@
             if (coupleData.dday) {
                 counter.innerText = Utils.calculateDday(coupleData.dday);
                 dateLabel.innerText = `${coupleData.dday.replace(/-/g, '.')} 시작`;
-            } else {
-                counter.innerText = "D-day 설정필요";
-                dateLabel.innerText = "설정 메뉴에서 등록해주세요";
             }
 
-            if (coupleData.bgImage) {
-                bgContainer.style.backgroundImage = `url('${coupleData.bgImage}')`;
-            } else {
-                bgContainer.style.backgroundImage = `url('https://placehold.co/1080x1920/ffe4e8/ffb3c6?text=Upload+Cover+Photo')`;
-            }
+            if (coupleData.bgImage) bgContainer.style.backgroundImage = `url('${coupleData.bgImage}')`;
         }
 
-        function renderSettingsInput() {
-            document.getElementById('setting-nickname').value = currentUserData.nickname || '';
-            document.getElementById('setting-birthdate').value = currentUserData.birthdate || '';
-            if (currentUserData.profilePic) {
-                document.getElementById('setting-profile-pic').src = currentUserData.profilePic;
-            } else {
-                document.getElementById('setting-profile-pic').src = "https://placehold.co/150x150/ffb3c6/ffffff?text=♡";
-            }
-            if (coupleData.dday) {
-                document.getElementById('setting-dday').value = coupleData.dday;
-            }
-        }
+        document.getElementById('input-home-bg').onchange = (e) => {
+            const file = e.target.files[0];
+            if(!file) return;
+            Utils.showModal("업로드 중", "사진을 저장하고 있습니다...");
+            Utils.resizeImage(file, 1080, 0.7, async (base64) => {
+                try {
+                    await update(settingsRef, { bgImage: base64 });
+                    document.getElementById('custom-modal').classList.add('hidden');
+                } catch(err) { Utils.showModal("오류", "사진 저장에 실패했습니다."); }
+            });
+        };
 
-        document.getElementById('btn-save-my-info').onclick = async () => {
-            const newNick = document.getElementById('setting-nickname').value.trim();
-            const newBirth = document.getElementById('setting-birthdate').value;
-            const newPass = document.getElementById('setting-password').value.trim();
+        // --- 칭찬스티커 로직 ---
+        function renderStickers() {
+            const container = document.getElementById('sticker-grape-container');
+            container.innerHTML = '';
             
-            let updateData = {};
-            if(newNick) updateData[`${currentRole}/nickname`] = newNick;
-            updateData[`${currentRole}/birthdate`] = newBirth;
-            if(newPass) updateData[`${currentRole}/pass`] = newPass;
+            let filledCount = 0;
+            for(let i=1; i<=20; i++) { if(currentStickers[i]) filledCount++; }
+            document.getElementById('sticker-count-display').innerText = filledCount;
 
+            // 포도송이 레이아웃: [4, 4, 4, 3, 3, 2] = 20개
+            const layout = [4, 4, 4, 3, 3, 2];
+            let stickerIndex = 1;
+
+            layout.forEach(rowSize => {
+                let rowHtml = `<div class="flex gap-2 justify-center">`;
+                for(let i=0; i<rowSize; i++) {
+                    const sNum = stickerIndex++;
+                    const isRed = (sNum % 5 === 0);
+                    const filled = currentStickers[sNum];
+                    
+                    if(filled) {
+                        const heartColor = isRed ? 'text-sticker-red' : 'text-deep-pink';
+                        rowHtml += `
+                            <div class="sticker-slot hover:scale-110 drop-shadow-md" onclick="showStickerReason(${sNum})">
+                                <i class="fas fa-heart ${heartColor} text-[45px]"></i>
+                                <span class="sticker-num">${sNum}</span>
+                            </div>
+                        `;
+                    } else {
+                        // 빈 슬롯 (클릭 시 붙이기)
+                        rowHtml += `
+                            <div class="sticker-slot hover:scale-110" onclick="attemptAddSticker(${sNum})">
+                                <i class="far fa-heart text-white/70 text-[40px] drop-shadow-sm"></i>
+                                <span class="sticker-num text-white/50">${sNum}</span>
+                            </div>
+                        `;
+                    }
+                }
+                rowHtml += `</div>`;
+                container.insertAdjacentHTML('beforeend', rowHtml);
+            });
+        }
+
+        window.showStickerReason = (num) => {
+            const sticker = currentStickers[num];
+            if(sticker) {
+                Utils.showModal(`✨ ${num}번째 칭찬`, sticker.reason);
+            }
+        };
+
+        window.attemptAddSticker = (targetNum) => {
+            // 순서대로 붙이도록 강제
+            for(let i=1; i<targetNum; i++) {
+                if(!currentStickers[i]) {
+                    Utils.showModal("알림", `${i}번째 스티커부터 먼저 채워주세요!`);
+                    return;
+                }
+            }
+            if(currentRole !== 'female') {
+                Utils.showModal("알림", "여자친구만 스티커를 붙여줄 수 있습니다 ♡");
+                return;
+            }
+
+            stickerTargetSlot = targetNum;
+            document.getElementById('sticker-auth-pass').value = '';
+            document.getElementById('sticker-input-reason').value = '';
+            document.getElementById('sticker-step-auth').classList.remove('hidden');
+            document.getElementById('sticker-step-reason').classList.add('hidden');
+            document.getElementById('sticker-action-modal').classList.remove('hidden');
+        };
+
+        document.querySelectorAll('.btn-sticker-cancel').forEach(btn => {
+            btn.onclick = () => { document.getElementById('sticker-action-modal').classList.add('hidden'); stickerTargetSlot = null; };
+        });
+
+        document.getElementById('btn-sticker-verify').onclick = () => {
+            const inputPass = document.getElementById('sticker-auth-pass').value;
+            if(inputPass === currentUserData.pass) {
+                document.getElementById('sticker-step-auth').classList.add('hidden');
+                document.getElementById('sticker-step-reason').classList.remove('hidden');
+            } else {
+                Utils.showModal("오류", "비밀번호가 일치하지 않습니다.");
+                document.getElementById('sticker-action-modal').classList.add('hidden');
+            }
+        };
+
+        document.getElementById('btn-sticker-confirm').onclick = async () => {
+            const reason = document.getElementById('sticker-input-reason').value.trim();
+            if(!reason) return Utils.showModal("알림", "칭찬 이유를 적어주세요!");
+            
+            const slot = stickerTargetSlot;
             try {
-                await update(usersRef, updateData);
-                currentUserData.nickname = newNick || currentUserData.nickname;
-                currentUserData.birthdate = newBirth;
-                updateSidebarProfile();
+                await set(ref(db, `${basePath}/stickers/${slot}`), { reason: reason, timestamp: Date.now() });
+                document.getElementById('sticker-action-modal').classList.add('hidden');
                 
-                document.activeElement.blur();
+                // 달성 축하 팝업
+                if(slot === 20) {
+                    setTimeout(() => Utils.showModal("🎉 칭찬스티커 최종 완성! 🎉", "당신의 사랑스러운 남자친구에게\n진심을 다한 마음을 표현해 주세요!", false, null, true), 300);
+                } else if(slot % 5 === 0) {
+                    setTimeout(() => Utils.showModal("🎁 소원 단위 달성!", "남자친구의 작은 소원을 들어주세요 ♡", false, null, true), 300);
+                }
                 
-                Utils.showModal("성공", "내 정보가 수정되었습니다.");
-                document.getElementById('setting-password').value = '';
+                stickerTargetSlot = null;
             } catch(e) {
                 Utils.showModal("오류", "저장에 실패했습니다.");
             }
         };
 
-        document.getElementById('input-profile-pic').onchange = (e) => {
-            const file = e.target.files[0];
-            if(!file) return;
-            Utils.resizeImage(file, 200, 0.8, async (base64) => {
+
+        // --- 버킷리스트 로직 ---
+        function renderBuckets() {
+            const gridEl = document.getElementById('bucket-grid');
+            gridEl.innerHTML = '';
+            
+            const total = currentBuckets.length;
+            const achievedCount = currentBuckets.filter(b => b.isAchieved).length;
+            
+            // 에너지바 업데이트
+            let percent = total === 0 ? 0 : Math.round((achievedCount / 100) * 100); 
+            if(percent > 100) percent = 100;
+            document.getElementById('bucket-energy-bar').style.width = `${percent}%`;
+            document.getElementById('bucket-energy-text').innerText = `애정도 ${percent}%`;
+
+            if(total === 0) {
+                gridEl.innerHTML = '<p class="text-center text-purple-400 py-10 text-sm w-full col-span-2">첫 번째 버킷리스트를 추가해보세요 ♡</p>';
+                return;
+            }
+
+            currentBuckets.forEach(bucket => {
+                // 달성 완료 시 썸네일에 스티커 뱃지 표시
+                const badgeHtml = bucket.isAchieved ? `<div class="absolute top-2 right-2 bg-deep-pink text-white text-[10px] font-jua px-2 py-1 rounded-full shadow-md z-10 transform rotate-12 border border-white">달성 완료</div>` : '';
+                const opacityClass = bucket.isAchieved ? 'opacity-80' : '';
+                
+                const html = `
+                    <div class="bucket-card purple-shadow ${opacityClass}" onclick="openBucketModal('${bucket.id}')">
+                        ${badgeHtml}
+                        <div class="flex-1 flex items-center justify-center bg-gray-50 rounded-t-2xl border-b border-purple-50 text-4xl">
+                            ${bucket.emoticon}
+                        </div>
+                        <div class="p-3 bg-white rounded-b-2xl h-14 flex items-center justify-center">
+                            <h4 class="font-bold text-sm text-center text-text-dark line-clamp-2 leading-tight">${Utils.escapeHtml(bucket.title)}</h4>
+                        </div>
+                    </div>
+                `;
+                gridEl.insertAdjacentHTML('beforeend', html);
+            });
+        }
+
+        // 이모지 선택기 생성
+        const emojiSelector = document.getElementById('bucket-emoji-selector');
+        EMOJIS.forEach(emoji => {
+            const btn = document.createElement('button');
+            btn.className = 'text-2xl p-2 rounded-xl hover:bg-purple-100 transition-colors opacity-50 grayscale';
+            btn.innerText = emoji;
+            btn.onclick = () => {
+                Array.from(emojiSelector.children).forEach(c => { c.classList.add('opacity-50', 'grayscale'); c.classList.remove('bg-purple-100', 'scale-110'); });
+                btn.classList.remove('opacity-50', 'grayscale');
+                btn.classList.add('bg-purple-100', 'scale-110');
+                document.getElementById('bucket-selected-emoji').value = emoji;
+            };
+            emojiSelector.appendChild(btn);
+        });
+        emojiSelector.children[0].click(); // 첫번째 기본 선택
+
+        document.getElementById('btn-show-add-bucket').onclick = () => {
+            if(currentBuckets.length >= 100) {
+                Utils.showModal("알림", "버킷리스트는 최대 100개까지만 만들 수 있어요!");
+                return;
+            }
+            document.getElementById('bucket-input-title').value = '';
+            document.getElementById('bucket-add-modal').classList.remove('hidden');
+        };
+
+        document.getElementById('btn-bucket-add-cancel').onclick = () => {
+            document.getElementById('bucket-add-modal').classList.add('hidden');
+        };
+
+        document.getElementById('btn-bucket-add-save').onclick = async () => {
+            const title = document.getElementById('bucket-input-title').value.trim();
+            const emoji = document.getElementById('bucket-selected-emoji').value;
+            if(!title) return Utils.showModal("알림", "제목을 입력해주세요.");
+            
+            try {
+                await set(push(bucketsRef), {
+                    title: title, emoticon: emoji, isAchieved: false, timestamp: Date.now(), comments: []
+                });
+                document.getElementById('bucket-add-modal').classList.add('hidden');
+            } catch(e) { Utils.showModal("오류", "저장 실패"); }
+        };
+
+        window.openBucketModal = (id) => {
+            const bucket = currentBuckets.find(b => b.id === id);
+            if(!bucket) return;
+            currentBucketModalId = id;
+            
+            document.getElementById('bucket-detail-modal').classList.remove('hidden');
+            renderBucketDetail(bucket);
+        };
+
+        document.getElementById('btn-close-bucket-detail').onclick = () => {
+            document.getElementById('bucket-detail-modal').classList.add('hidden');
+            currentBucketModalId = null;
+        };
+
+        function renderBucketDetail(bucket) {
+            document.getElementById('bucket-detail-emoji').innerText = bucket.emoticon;
+            document.getElementById('bucket-detail-title').innerText = bucket.title;
+            
+            // 사진 처리
+            const photoEl = document.getElementById('bucket-detail-photo');
+            const placeholderEl = document.getElementById('bucket-photo-placeholder');
+            if(bucket.photo) {
+                photoEl.src = bucket.photo; photoEl.classList.remove('hidden'); placeholderEl.classList.add('hidden');
+            } else {
+                photoEl.classList.add('hidden'); placeholderEl.classList.remove('hidden');
+            }
+
+            // 달성 버튼/뱃지 처리
+            const btnAchieve = document.getElementById('btn-bucket-achieve');
+            const badge = document.getElementById('bucket-detail-badge');
+            if(bucket.isAchieved) {
+                badge.classList.remove('hidden');
+                btnAchieve.innerHTML = `<i class="fas fa-undo mr-2"></i>달성 취소하기`;
+                btnAchieve.classList.replace('text-deep-purple', 'text-gray-500');
+                btnAchieve.classList.replace('border-deep-purple', 'border-gray-300');
+            } else {
+                badge.classList.add('hidden');
+                btnAchieve.innerHTML = `<i class="fas fa-check-circle mr-2"></i>달성 체크하기`;
+                btnAchieve.classList.replace('text-gray-500', 'text-deep-purple');
+                btnAchieve.classList.replace('border-gray-300', 'border-deep-purple');
+            }
+
+            // 댓글 렌더링
+            const commentsContainer = document.getElementById('bucket-detail-comments');
+            commentsContainer.innerHTML = '';
+            if(!bucket.comments || bucket.comments.length === 0) {
+                commentsContainer.innerHTML = '<p class="text-xs text-gray-400 text-center py-4">아직 소감이 없어요.</p>';
+            } else {
+                bucket.comments.forEach((c, idx) => {
+                    const cIsMine = c.authorRole === currentRole;
+                    const cName = allUsersData[c.authorRole]?.nickname || '알 수 없음';
+                    const cDate = c.timestamp ? Utils.formatDate(c.timestamp) : '';
+                    const html = `
+                        <div class="flex items-start gap-2 bg-white p-3 rounded-2xl shadow-sm border border-purple-50 mb-2">
+                            <div class="flex flex-col min-w-fit mt-0.5">
+                                <span class="text-xs font-bold text-main-purple">${cName}</span>
+                                <span class="text-[9px] text-gray-400 leading-tight mt-0.5">${cDate}</span>
+                            </div>
+                            <span class="text-xs text-text-dark flex-1 break-all mt-0.5">${Utils.escapeHtml(c.text)}</span>
+                            ${cIsMine ? `<button class="text-xs text-gray-300 hover:text-red-400 mt-0.5" onclick="deleteBucketComment('${bucket.id}', ${idx})"><i class="fas fa-times"></i></button>` : ''}
+                        </div>
+                    `;
+                    commentsContainer.insertAdjacentHTML('beforeend', html);
+                });
+                setTimeout(() => { commentsContainer.scrollTop = commentsContainer.scrollHeight; }, 50);
+            }
+        }
+
+        // 달성 상태 변경 로직
+        document.getElementById('btn-bucket-achieve').onclick = async () => {
+            if(!currentBucketModalId) return;
+            const bucket = currentBuckets.find(b => b.id === currentBucketModalId);
+            const msg = bucket.isAchieved ? "달성 완료를 취소하시겠습니까?" : "버킷리스트를 달성 하셨나요?";
+            Utils.showModal("확인", msg, true, async () => {
                 try {
-                    let updateData = {};
-                    updateData[`${currentRole}/profilePic`] = base64;
-                    await update(usersRef, updateData);
-                    document.getElementById('setting-profile-pic').src = base64;
-                    currentUserData.profilePic = base64;
-                    updateSidebarProfile();
-                } catch(err) {
-                    Utils.showModal("오류", "업로드 실패");
+                    await update(ref(db, `${basePath}/buckets/${currentBucketModalId}`), { isAchieved: !bucket.isAchieved });
+                    // 업데이트 성공 시 디테일 창 자동으로 닫기
+                    document.getElementById('bucket-detail-modal').classList.add('hidden');
+                    currentBucketModalId = null;
+                } catch (e) {
+                    Utils.showModal("오류", "달성 상태 변경에 실패했습니다.");
                 }
             });
         };
 
-        document.getElementById('btn-save-couple-info').onclick = async () => {
-            const newDday = document.getElementById('setting-dday').value;
+        // 버킷리스트 삭제 로직
+        document.getElementById('btn-bucket-delete').onclick = () => {
+            if(!currentBucketModalId) return;
+            Utils.showModal("삭제", "이 버킷리스트를 정말 삭제할까요?", true, async () => {
+                try {
+                    await remove(ref(db, `${basePath}/buckets/${currentBucketModalId}`));
+                    document.getElementById('bucket-detail-modal').classList.add('hidden');
+                    currentBucketModalId = null;
+                } catch (e) {
+                    Utils.showModal("오류", "버킷리스트 삭제에 실패했습니다.");
+                }
+            });
+        };
+
+        document.getElementById('bucket-upload-photo').onchange = (e) => {
+            if(!currentBucketModalId) return;
+            const file = e.target.files[0];
+            if(!file) return;
+            Utils.showModal("업로드 중", "사진을 저장하는 중입니다...");
+            Utils.resizeImage(file, 800, 0.7, async (base64) => {
+                try {
+                    await update(ref(db, `${basePath}/buckets/${currentBucketModalId}`), { photo: base64 });
+                    document.getElementById('custom-modal').classList.add('hidden');
+                } catch(err) { Utils.showModal("오류", "사진 업로드 실패"); }
+            });
+        };
+
+        document.getElementById('btn-add-bucket-comment').onclick = async () => {
+            if(!currentBucketModalId) return;
+            const input = document.getElementById('bucket-comment-input');
+            const text = input.value.trim();
+            if(!text) return;
+            
             try {
-                await update(settingsRef, { dday: newDday });
-                Utils.showModal("성공", "커플 정보가 수정되었습니다.");
-            } catch(e) {
-                Utils.showModal("오류", "저장에 실패했습니다.");
-            }
+                const bRef = ref(db, `${basePath}/buckets/${currentBucketModalId}`);
+                const snap = await get(bRef);
+                if(snap.exists()) {
+                    let comments = snap.val().comments || [];
+                    comments.push({ text: text, authorRole: currentRole, timestamp: Date.now() });
+                    await update(bRef, { comments: comments });
+                    input.value = '';
+                }
+            } catch(e) { Utils.showModal("오류", "댓글 작성 실패"); }
         };
 
-        // 프로필 사진 원본 뷰 모달 관련
-        window.viewProfilePic = (imgUrl) => {
-            // 기본 더미 이미지일 경우는 확대하지 않음
-            if(!imgUrl || imgUrl.includes('placehold.co')) return;
-            document.getElementById('profile-view-img').src = imgUrl;
-            document.getElementById('profile-view-modal').classList.remove('hidden');
+        window.deleteBucketComment = async (bId, idx) => {
+            Utils.showModal("삭제", "댓글을 삭제할까요?", true, async () => {
+                const bRef = ref(db, `${basePath}/buckets/${bId}`);
+                const snap = await get(bRef);
+                if(snap.exists()) {
+                    let comments = snap.val().comments || [];
+                    comments.splice(idx, 1);
+                    await update(bRef, { comments: comments });
+                }
+            });
         };
 
-        // 바탕 터치 시 닫기
-        document.getElementById('profile-view-modal').onclick = (e) => {
-            if (e.target.id === 'profile-view-modal' || e.target.closest('#btn-close-profile-view')) {
-                document.getElementById('profile-view-modal').classList.add('hidden');
+
+        // --- 텍스트 게시판 로직 ---
+        function updateTextBoardBadge() {
+            const isCurrentlyViewing = document.getElementById('view-text-board').classList.contains('active');
+            if (isCurrentlyViewing) {
+                lastViewedTextBoard = Date.now();
+                localStorage.setItem(`couple_app_last_viewed_${currentRole}`, lastViewedTextBoard.toString());
             }
-        };
+
+            let newCount = 0;
+            currentPostsList.forEach(post => {
+                if (post.authorRole !== currentRole && post.timestamp > lastViewedTextBoard) newCount++;
+                if (post.comments) {
+                    post.comments.forEach(c => {
+                        if (c.authorRole !== currentRole && c.timestamp > lastViewedTextBoard) newCount++;
+                    });
+                }
+            });
+
+            const badge = document.getElementById('badge-text-board');
+            const badgeCount = document.getElementById('badge-text-board-count');
+            if (newCount > 0 && !isCurrentlyViewing) {
+                badgeCount.innerText = newCount; badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
 
         function renderTextBoard(posts) {
             const listEl = document.getElementById('post-list');
@@ -902,44 +1261,46 @@
                         const cDate = c.timestamp ? Utils.formatDate(c.timestamp) : '';
                         
                         commentsHtml += `
-                            <div class="flex items-start gap-2 mt-2 bg-pastel-pink/30 p-2 rounded-lg">
+                            <div class="flex items-start gap-2 mt-2 bg-pastel-pink/30 p-2.5 rounded-xl">
                                 <div class="flex flex-col min-w-fit mt-0.5">
                                     <span class="text-xs font-bold text-main-pink">${cName}</span>
-                                    <span class="text-[9px] text-gray-400 leading-tight">${cDate}</span>
+                                    <span class="text-[9px] text-gray-400 leading-tight mt-0.5">${cDate}</span>
                                 </div>
-                                <span class="text-xs text-text-dark flex-1 break-all mt-0.5">${c.text}</span>
+                                <span class="text-xs text-text-dark flex-1 break-all mt-0.5">${Utils.escapeHtml(c.text)}</span>
                                 ${cIsMine ? `<button class="text-xs text-gray-400 hover:text-red-400 mt-0.5" onclick="deleteComment('${post.id}', ${idx})"><i class="fas fa-times"></i></button>` : ''}
                             </div>
                         `;
                     });
                 }
 
-                // ID만 넘기도록 변경하여 따옴표/줄바꿈 문법 오류 방지
+                const safeTitle = Utils.escapeHtml(post.title);
+                const safeText = Utils.escapeHtml(post.text);
+
                 const html = `
-                    <div class="bg-white rounded-2xl p-4 cute-shadow">
-                        <div class="flex items-center justify-between mb-3">
+                    <div class="bg-white rounded-3xl p-5 cute-shadow">
+                        <div class="flex items-center justify-between mb-4">
                             <div class="flex items-center gap-2">
-                                <img src="${profileImg}" class="w-8 h-8 rounded-full object-cover border border-pastel-pink cursor-pointer hover:opacity-80 transition-opacity" onclick="viewProfilePic('${profileImg}')">
+                                <img src="${profileImg}" class="w-9 h-9 rounded-full object-cover border-2 border-pastel-pink cursor-pointer active:scale-95 transition-transform" onclick="viewProfilePic('${profileImg}')">
                                 <div>
                                     <div class="text-sm font-bold text-text-dark">${authorName}</div>
                                     <div class="text-[10px] text-text-light">${Utils.formatDate(post.timestamp)}</div>
                                 </div>
                             </div>
                             ${isMine ? `
-                            <div class="flex gap-2">
-                                <button class="text-xs text-gray-400 hover:text-main-pink font-bold" onclick="openEditModal('${post.id}')">수정</button>
-                                <button class="text-xs text-gray-400 hover:text-red-400 font-bold" onclick="deletePost('${post.id}')">삭제</button>
+                            <div class="flex gap-3 bg-gray-50 px-3 py-1.5 rounded-full">
+                                <button class="text-xs text-gray-500 hover:text-main-pink font-bold" onclick="openEditModal('${post.id}')"><i class="fas fa-pen"></i></button>
+                                <button class="text-xs text-gray-500 hover:text-red-400 font-bold" onclick="deletePost('${post.id}')"><i class="fas fa-trash"></i></button>
                             </div>
                             ` : ''}
                         </div>
-                        ${post.title ? `<h4 class="font-bold text-deep-pink mb-1 text-base ml-1 break-all">${post.title}</h4>` : ''}
-                        <p class="text-sm text-text-dark whitespace-pre-wrap mb-4 ml-1 break-all leading-relaxed">${post.text}</p>
+                        ${safeTitle ? `<h4 class="font-bold text-deep-pink mb-2 text-base ml-1 break-all">${safeTitle}</h4>` : ''}
+                        <p class="text-sm text-text-dark whitespace-pre-wrap mb-4 ml-1 break-all leading-relaxed">${safeText}</p>
                         
-                        <div class="border-t border-pastel-pink pt-3 mt-2">
+                        <div class="border-t border-pastel-pink pt-3 mt-3">
                             ${commentsHtml}
                             <div class="flex gap-2 mt-3">
-                                <input type="text" id="comment-input-${post.id}" placeholder="댓글 달기..." class="text-xs py-2 px-3 border-gray-100 bg-gray-50 rounded-lg">
-                                <button class="bg-main-pink text-white text-xs px-4 rounded-lg whitespace-nowrap font-bold shadow-sm" onclick="addComment('${post.id}')">등록</button>
+                                <input type="text" id="comment-input-${post.id}" placeholder="따뜻한 댓글 달기..." class="text-xs py-2 px-3 border-gray-100 bg-gray-50 rounded-xl">
+                                <button class="bg-main-pink text-white text-xs px-4 rounded-xl whitespace-nowrap font-bold shadow-sm" onclick="addComment('${post.id}')">등록</button>
                             </div>
                         </div>
                     </div>
@@ -951,32 +1312,20 @@
         document.getElementById('btn-submit-post').onclick = async () => {
             const titleInput = document.getElementById('post-input-title');
             const input = document.getElementById('post-input-text');
-            const title = titleInput.value.trim();
-            const text = input.value.trim();
+            const title = titleInput.value.trim(); const text = input.value.trim();
             
-            if(!title) { Utils.showModal("알림", "제목을 적어주세요."); return; }
-            if(!text) { Utils.showModal("알림", "내용을 적어주세요."); return; }
+            if(!title || !text) { Utils.showModal("알림", "제목과 내용을 모두 적어주세요."); return; }
             
             try {
-                const newPostRef = push(postsRef);
-                await set(newPostRef, {
-                    title: title, text: text, authorRole: currentRole, timestamp: Date.now(), comments: []
-                });
+                await set(push(postsRef), { title: title, text: text, authorRole: currentRole, timestamp: Date.now(), comments: [] });
                 titleInput.value = ''; input.value = '';
+                document.activeElement.blur();
             } catch(e) { Utils.showModal("오류", "글 작성 실패"); }
         };
 
-        window.deletePost = (postId) => {
-            Utils.showModal("삭제", "이 이야기를 지울까요?", true, async () => {
-                await remove(ref(db, `${basePath}/posts/${postId}`));
-            });
-        };
-
-        // 수정 버그 해결: HTML 문자열 안에서 파라미터를 넘기지 않고, ID로 원본 리스트에서 검색
         window.openEditModal = (postId) => {
             const post = currentPostsList.find(p => p.id === postId);
             if(!post) return;
-            
             editTargetPostId = postId;
             document.getElementById('edit-input-title').value = post.title || '';
             document.getElementById('edit-input-text').value = post.text || '';
@@ -984,8 +1333,7 @@
         };
 
         document.getElementById('btn-edit-cancel').onclick = () => {
-            document.getElementById('edit-modal').classList.add('hidden');
-            editTargetPostId = null;
+            document.getElementById('edit-modal').classList.add('hidden'); editTargetPostId = null;
         };
 
         document.getElementById('btn-edit-save').onclick = async () => {
@@ -995,18 +1343,13 @@
             
             if(newTitle && newText) {
                 try {
-                    await update(ref(db, `${basePath}/posts/${editTargetPostId}`), { 
-                        title: newTitle, text: newText 
-                    });
-                    document.getElementById('edit-modal').classList.add('hidden');
-                    editTargetPostId = null;
-                } catch (e) {
-                    Utils.showModal("오류", "수정에 실패했습니다.");
-                }
-            } else {
-                Utils.showModal("알림", "제목과 내용을 모두 입력해주세요.");
-            }
+                    await update(ref(db, `${basePath}/posts/${editTargetPostId}`), { title: newTitle, text: newText });
+                    document.getElementById('edit-modal').classList.add('hidden'); editTargetPostId = null;
+                } catch (e) { Utils.showModal("오류", "수정에 실패했습니다."); }
+            } else { Utils.showModal("알림", "제목과 내용을 모두 입력해주세요."); }
         };
+
+        window.deletePost = (postId) => { Utils.showModal("삭제", "이 이야기를 지울까요?", true, async () => { await remove(ref(db, `${basePath}/posts/${postId}`)); }); };
 
         window.addComment = async (postId) => {
             const input = document.getElementById(`comment-input-${postId}`);
@@ -1019,7 +1362,7 @@
                     let comments = snap.val().comments || [];
                     comments.push({ text: text, authorRole: currentRole, timestamp: Date.now() });
                     await update(postRef, { comments: comments });
-                    input.value = '';
+                    input.value = ''; document.activeElement.blur();
                 }
             } catch(e) { Utils.showModal("오류", "댓글 작성 실패"); }
         };
@@ -1036,16 +1379,14 @@
             });
         };
 
+        // --- 사진 게시판 로직 ---
         document.getElementById('input-upload-photo').onchange = (e) => {
             const file = e.target.files[0];
             if(!file) return;
             Utils.showModal("업로드 중", "사진을 최적화하여 올리고 있습니다...");
             Utils.resizeImage(file, 1080, 0.7, async (base64) => {
                 try {
-                    const newPhotoRef = push(photosRef);
-                    await set(newPhotoRef, {
-                        image: base64, authorRole: currentRole, timestamp: Date.now(), comments: []
-                    });
+                    await set(push(photosRef), { image: base64, authorRole: currentRole, timestamp: Date.now(), comments: [] });
                     document.getElementById('custom-modal').classList.add('hidden');
                 } catch(err) { Utils.showModal("오류", "사진 업로드 실패"); }
             });
@@ -1064,28 +1405,19 @@
                 const isMine = photo.authorRole === currentRole;
                 const cCount = photo.comments ? photo.comments.length : 0;
                 const html = `
-                    <div class="photo-item cute-shadow group cursor-pointer" onclick="openPhotoModal('${photo.id}')">
+                    <div class="photo-item cute-shadow group cursor-pointer active:scale-95 transition-transform" onclick="openPhotoModal('${photo.id}')">
                         <img src="${photo.image}" loading="lazy">
                         <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-2 flex justify-between items-end pointer-events-none">
-                            <span class="text-white text-[10px] drop-shadow-md"><i class="fas fa-comment mr-1"></i> ${cCount}</span>
+                            <span class="text-white text-[10px] drop-shadow-md font-bold"><i class="fas fa-comment mr-1"></i> ${cCount}</span>
                         </div>
-                        ${isMine ? `<button class="absolute top-2 right-2 text-white text-[10px] bg-red-500/80 px-2 py-1 rounded shadow pointer-events-auto" onclick="event.stopPropagation(); deletePhoto('${photo.id}')">삭제</button>` : ''}
+                        ${isMine ? `<button class="absolute top-2 right-2 text-white text-[10px] bg-black/50 px-2 py-1 rounded-full shadow pointer-events-auto" onclick="event.stopPropagation(); deletePhoto('${photo.id}')"><i class="fas fa-trash"></i></button>` : ''}
                     </div>
                 `;
                 gridEl.insertAdjacentHTML('beforeend', html);
             });
         }
 
-        window.deletePhoto = (photoId) => {
-            Utils.showModal("삭제", "이 사진을 지울까요?", true, async () => {
-                await remove(ref(db, `${basePath}/photos/${photoId}`));
-            });
-        };
-
-        document.getElementById('btn-close-photo-modal').onclick = () => {
-            document.getElementById('photo-modal').classList.add('hidden');
-            currentPhotoModalId = null;
-        };
+        window.deletePhoto = (photoId) => { Utils.showModal("삭제", "이 사진을 지울까요?", true, async () => { await remove(ref(db, `${basePath}/photos/${photoId}`)); }); };
 
         window.openPhotoModal = (photoId) => {
             const photo = currentPhotosList.find(p => p.id === photoId);
@@ -1096,29 +1428,28 @@
             document.getElementById('photo-comment-input').value = '';
             renderPhotoComments(photo);
         };
+        
+        document.getElementById('btn-close-photo-modal').onclick = () => { document.getElementById('photo-modal').classList.add('hidden'); currentPhotoModalId = null; };
 
         window.renderPhotoComments = (photo) => {
             const commentsContainer = document.getElementById('photo-modal-comments');
             commentsContainer.innerHTML = '';
             
             if(!photo.comments || photo.comments.length === 0) {
-                commentsContainer.innerHTML = '<p class="text-xs text-gray-400 text-center py-4">아직 댓글이 없습니다.</p>';
-                return;
+                commentsContainer.innerHTML = '<p class="text-xs text-gray-400 text-center py-4">아직 댓글이 없습니다.</p>'; return;
             }
 
             photo.comments.forEach((c, idx) => {
                 const cIsMine = c.authorRole === currentRole;
-                const cAuthorData = allUsersData[c.authorRole];
-                const cName = cAuthorData ? cAuthorData.nickname : '알 수 없음';
+                const cName = allUsersData[c.authorRole]?.nickname || '알 수 없음';
                 const cDate = c.timestamp ? Utils.formatDate(c.timestamp) : '';
-                
                 const html = `
-                    <div class="flex items-start gap-2 bg-pastel-pink/20 p-2 rounded-lg mb-2">
+                    <div class="flex items-start gap-2 bg-pastel-pink/30 p-2.5 rounded-xl mb-2">
                         <div class="flex flex-col min-w-fit mt-0.5">
                             <span class="text-xs font-bold text-main-pink">${cName}</span>
-                            <span class="text-[9px] text-gray-400 leading-tight">${cDate}</span>
+                            <span class="text-[9px] text-gray-400 leading-tight mt-0.5">${cDate}</span>
                         </div>
-                        <span class="text-xs text-text-dark flex-1 break-all mt-0.5">${c.text}</span>
+                        <span class="text-xs text-text-dark flex-1 break-all mt-0.5">${Utils.escapeHtml(c.text)}</span>
                         ${cIsMine ? `<button class="text-xs text-gray-400 hover:text-red-400 mt-0.5" onclick="deletePhotoComment('${photo.id}', ${idx})"><i class="fas fa-times"></i></button>` : ''}
                     </div>
                 `;
@@ -1132,7 +1463,6 @@
             const input = document.getElementById('photo-comment-input');
             const text = input.value.trim();
             if(!text) return;
-
             try {
                 const photoRef = ref(db, `${basePath}/photos/${currentPhotoModalId}`);
                 const snap = await get(photoRef);
@@ -1140,7 +1470,7 @@
                     let comments = snap.val().comments || [];
                     comments.push({ text: text, authorRole: currentRole, timestamp: Date.now() });
                     await update(photoRef, { comments: comments });
-                    input.value = '';
+                    input.value = ''; document.activeElement.blur();
                 }
             } catch(e) { Utils.showModal("오류", "댓글 작성 실패"); }
         };
@@ -1155,6 +1485,47 @@
                     await update(photoRef, { comments: comments });
                 }
             });
+        };
+
+        // --- 설정 로직 ---
+        function renderSettingsInput() {
+            document.getElementById('setting-nickname').value = currentUserData.nickname || '';
+            document.getElementById('setting-birthdate').value = currentUserData.birthdate || '';
+            if (currentUserData.profilePic) document.getElementById('setting-profile-pic').src = currentUserData.profilePic;
+            else document.getElementById('setting-profile-pic').src = "https://placehold.co/150x150/ffb3c6/ffffff?text=♡";
+            if (coupleData.dday) document.getElementById('setting-dday').value = coupleData.dday;
+        }
+
+        document.getElementById('btn-save-my-info').onclick = async () => {
+            const newNick = document.getElementById('setting-nickname').value.trim();
+            const newBirth = document.getElementById('setting-birthdate').value;
+            const newPass = document.getElementById('setting-password').value.trim();
+            
+            let updateData = {};
+            if(newNick) updateData[`${currentRole}/nickname`] = newNick;
+            updateData[`${currentRole}/birthdate`] = newBirth;
+            if(newPass) updateData[`${currentRole}/pass`] = newPass;
+
+            try {
+                await update(usersRef, updateData);
+                currentUserData.nickname = newNick || currentUserData.nickname;
+                currentUserData.birthdate = newBirth;
+                if(newPass) currentUserData.pass = newPass;
+                updateSidebarProfile();
+                
+                document.activeElement.blur();
+                document.getElementById('setting-password').value = '';
+                Utils.showModal("성공", "내 정보가 수정되었습니다.");
+            } catch(e) { Utils.showModal("오류", "저장에 실패했습니다."); }
+        };
+
+        document.getElementById('btn-save-couple-info').onclick = async () => {
+            const newDday = document.getElementById('setting-dday').value;
+            try {
+                await update(settingsRef, { dday: newDday });
+                Utils.showModal("성공", "커플 정보가 저장되었습니다.");
+                document.activeElement.blur();
+            } catch(e) { Utils.showModal("오류", "저장에 실패했습니다."); }
         };
     </script>
 </body>
