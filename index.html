@@ -108,14 +108,62 @@
         button { user-select: none; }
         
         .sticker-slot {
-            width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;
-            font-size: 28px; position: relative; cursor: pointer; transition: transform 0.2s;
+            width: 54px; height: 54px; display: flex; align-items: center; justify-content: center;
+            font-size: 28px; position: relative; cursor: pointer; transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
-        .sticker-slot:active { transform: scale(0.9); }
-        .sticker-num { position: absolute; font-size: 12px; color: white; font-weight: bold; top: 48%; left: 50%; transform: translate(-50%, -50%); text-shadow: 0px 1px 2px rgba(0,0,0,0.3); font-family: 'Jua', sans-serif;}
+        .sticker-slot:active { transform: scale(0.88); }
+        .sticker-num {
+            position: absolute; font-size: 13px; color: white; font-weight: bold;
+            top: 47%; left: 50%; transform: translate(-50%, -50%);
+            text-shadow: 0px 1px 3px rgba(0,0,0,0.45); font-family: 'Jua', sans-serif;
+            pointer-events: none; z-index: 2;
+        }
+        .heart-3d-pink {
+            width: 50px; height: 50px;
+            filter: drop-shadow(0 6px 6px rgba(255, 77, 136, 0.38)) drop-shadow(0 2px 2px rgba(180, 20, 70, 0.25));
+            animation: popSticker 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .heart-3d-red {
+            width: 52px; height: 52px;
+            filter: drop-shadow(0 6px 8px rgba(225, 20, 60, 0.48)) drop-shadow(0 2px 3px rgba(140, 0, 30, 0.3));
+            animation: popSticker 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        @keyframes popSticker {
+            0% { transform: scale(0.5); }
+            70% { transform: scale(1.12); }
+            100% { transform: scale(1); }
+        }
     </style>
 </head>
 <body>
+
+    <!-- 3D 볼륨 하트 공통 SVG 그라데이션 정의 -->
+    <svg width="0" height="0" class="absolute pointer-events-none">
+        <defs>
+            <!-- 분홍색 3D 하트 그라데이션 -->
+            <radialGradient id="grad-pink-3d" cx="32%" cy="28%" r="70%" fx="30%" fy="25%">
+                <stop offset="0%" stop-color="#fff0f5" />
+                <stop offset="22%" stop-color="#ff9ebb" />
+                <stop offset="60%" stop-color="#ff5c8a" />
+                <stop offset="88%" stop-color="#e02b62" />
+                <stop offset="100%" stop-color="#b81447" />
+            </radialGradient>
+            <!-- 빨간색 3D 하트 그라데이션 (5, 10, 15, 20번째용) -->
+            <radialGradient id="grad-red-3d" cx="32%" cy="28%" r="70%" fx="30%" fy="25%">
+                <stop offset="0%" stop-color="#ffe5ec" />
+                <stop offset="18%" stop-color="#ff6b81" />
+                <stop offset="55%" stop-color="#ff1f40" />
+                <stop offset="85%" stop-color="#c90022" />
+                <stop offset="100%" stop-color="#8a0015" />
+            </radialGradient>
+            <!-- 하단 입체 반사광 그라데이션 -->
+            <linearGradient id="grad-rim-light" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="white" stop-opacity="0.6" />
+                <stop offset="50%" stop-color="white" stop-opacity="0" />
+                <stop offset="100%" stop-color="#ffccd8" stop-opacity="0.45" />
+            </linearGradient>
+        </defs>
+    </svg>
 
     <!-- 전역 로더 -->
     <div id="app-loader" class="fixed inset-0 bg-pastel-pink z-[100] flex flex-col items-center justify-center">
@@ -179,22 +227,22 @@
     <!-- 칭찬스티커 부여/비밀번호 확인 모달 -->
     <div id="sticker-action-modal" class="fixed inset-0 bg-black/60 z-[105] hidden flex items-center justify-center px-4">
         <div class="bg-white rounded-3xl p-6 w-full max-w-sm cute-shadow text-center">
-            <h3 class="text-xl font-jua text-blue-500 mb-2">칭찬스티커 붙이기</h3>
-            <p class="text-xs text-gray-500 mb-4">여자친구만 스티커를 붙여줄 수 있어요!</p>
+            <h3 id="sticker-modal-title" class="text-xl font-jua text-deep-pink mb-2">칭찬스티커 붙이기</h3>
+            <p id="sticker-modal-desc" class="text-xs text-gray-500 mb-4">상대방만 스티커를 붙여줄 수 있어요!</p>
             
             <div id="sticker-step-auth">
-                <input type="password" id="sticker-auth-pass" placeholder="본인 비밀번호 입력" class="mb-4 text-center border-blue-200 focus:border-blue-400">
+                <input type="password" id="sticker-auth-pass" placeholder="본인 비밀번호 입력" class="mb-4 text-center border-pink-200 focus:border-deep-pink">
                 <div class="flex gap-2">
                     <button class="btn-sticker-cancel px-4 py-2 rounded-xl bg-gray-200 text-gray-700 font-bold w-1/2">취소</button>
-                    <button id="btn-sticker-verify" class="px-4 py-2 rounded-xl bg-blue-500 text-white font-bold w-1/2 shadow-md">확인</button>
+                    <button id="btn-sticker-verify" class="px-4 py-2 rounded-xl bg-deep-pink text-white font-bold w-1/2 shadow-md">확인</button>
                 </div>
             </div>
 
             <div id="sticker-step-reason" class="hidden">
-                <input type="text" id="sticker-input-reason" placeholder="칭찬 이유를 짧게 적어주세요!" class="mb-4 text-center border-blue-200 focus:border-blue-400 text-sm">
+                <input type="text" id="sticker-input-reason" placeholder="칭찬 이유를 짧게 적어주세요!" class="mb-4 text-center border-pink-200 focus:border-deep-pink text-sm">
                 <div class="flex gap-2">
                     <button class="btn-sticker-cancel px-4 py-2 rounded-xl bg-gray-200 text-gray-700 font-bold w-1/2">취소</button>
-                    <button id="btn-sticker-confirm" class="px-4 py-2 rounded-xl bg-sticker-red text-white font-bold w-1/2 shadow-md">스티커 확정</button>
+                    <button id="btn-sticker-confirm" class="px-4 py-2 rounded-xl bg-sticker-red text-white font-bold w-1/2 shadow-md">칭찬스티커 확정</button>
                 </div>
             </div>
         </div>
@@ -315,7 +363,7 @@
         <!-- 좌측 사이드바 메뉴 -->
         <nav id="sidebar" class="fixed top-0 left-0 bottom-0 w-64 bg-white shadow-2xl flex flex-col">
             <div class="bg-pastel-pink p-6 text-center rounded-br-3xl">
-                <div class="w-20 h-20 mx-auto bg-white rounded-full mb-3 flex items-center justify-center overflow-hidden border-4 border-white cute-shadow cursor-pointer hover:opacity-90" onclick="if(currentUserData.profilePic) viewProfilePic(currentUserData.profilePic)">
+                <div class="w-20 h-20 mx-auto bg-white rounded-full mb-3 flex items-center justify-center overflow-hidden border-4 border-white cute-shadow cursor-pointer hover:opacity-90" onclick="if(currentUserData && currentUserData.profilePic) viewProfilePic(currentUserData.profilePic)">
                     <img id="menu-profile-pic" src="https://placehold.co/150x150/ffb3c6/ffffff?text=♡" class="w-full h-full object-cover">
                 </div>
                 <h2 id="menu-nickname" class="font-jua text-lg text-deep-pink">닉네임</h2>
@@ -338,10 +386,16 @@
                     <i class="fas fa-image w-6 text-main-pink text-center mr-2"></i> 추억 앨범
                 </button>
 
-                <!-- 신규 메뉴: 칭찬스티커, 버킷리스트 -->
-                <button class="nav-btn w-full text-left px-6 py-3 text-text-dark hover:bg-pastel-blue/50 transition-colors flex items-center" data-target="sticker">
-                    <i class="fas fa-award w-6 text-blue-400 text-center mr-2"></i> 칭찬스티커
+                <!-- 칭찬 스티커 (여친용 - 분홍색 계열) -->
+                <button class="nav-btn w-full text-left px-6 py-3 text-text-dark hover:bg-pastel-pink/50 transition-colors flex items-center" data-target="sticker-female">
+                    <i class="fas fa-award w-6 text-deep-pink text-center mr-2"></i> 칭찬 스티커 (여친용)
                 </button>
+
+                <!-- 칭찬 스티커 (남친용 - 푸른색 계열) -->
+                <button class="nav-btn w-full text-left px-6 py-3 text-text-dark hover:bg-pastel-blue/50 transition-colors flex items-center" data-target="sticker-male">
+                    <i class="fas fa-award w-6 text-blue-400 text-center mr-2"></i> 칭찬 스티커 (남친용)
+                </button>
+
                 <button class="nav-btn w-full text-left px-6 py-3 text-text-dark hover:bg-pastel-purple/50 transition-colors flex items-center" data-target="bucket">
                     <i class="fas fa-list-check w-6 text-deep-purple text-center mr-2"></i> 버킷리스트
                 </button>
@@ -383,21 +437,41 @@
                 </div>
             </section>
 
-            <!-- 칭찬스티커 뷰 -->
-            <section id="view-sticker" class="view-section bg-pastel-blue h-full overflow-y-auto">
-                <div class="sticky top-0 bg-pastel-blue/90 backdrop-blur z-20 p-4 border-b border-blue-200 shadow-sm flex justify-between items-end">
+            <!-- 칭찬 스티커 (여친용) 뷰 - 분홍색 계열 -->
+            <section id="view-sticker-female" class="view-section bg-gradient-to-b from-[#ffe4e8] via-[#ffd6e0] to-[#ffc2d1] h-full overflow-y-auto">
+                <div class="sticky top-0 bg-pastel-pink/90 backdrop-blur z-20 p-4 border-b border-pink-200 shadow-sm flex justify-between items-end">
                     <div>
-                        <h2 class="font-jua text-2xl text-blue-600"><i class="fas fa-medal mr-2"></i>칭찬스티커</h2>
-                        <p class="text-[11px] text-blue-400 font-bold mt-1 tracking-tight">남자친구가 착한 일을 하면 스티커를 붙여주세요♡</p>
+                        <h2 class="font-jua text-2xl text-deep-pink"><i class="fas fa-medal mr-2"></i>칭찬 스티커 (여친용)</h2>
+                        <p class="text-[11px] text-[#e05780] font-bold mt-1 tracking-tight">여자친구가 착한 일을 하면 스티커를 붙여주세요♡</p>
                     </div>
-                    <div class="bg-white px-3 py-1 rounded-full shadow-sm text-blue-500 font-bold text-xs">
-                        <span id="sticker-count-display">0</span> / 20
+                    <div class="bg-white px-3 py-1 rounded-full shadow-sm text-deep-pink font-bold text-xs border border-pink-100">
+                        <span id="sticker-female-count-display">0</span> / 20
                     </div>
                 </div>
                 
                 <div class="p-4 pb-24 flex justify-center">
-                    <!-- 포도송이 레이아웃 컨테이너 -->
-                    <div class="flex flex-col items-center gap-3 mt-4" id="sticker-grape-container">
+                    <!-- 포도송이 레이아웃 컨테이너 (여친용) -->
+                    <div class="flex flex-col items-center gap-3 mt-4 bg-white/35 backdrop-blur-sm px-6 py-7 rounded-[36px] border border-white/60 cute-shadow" id="sticker-female-grape-container">
+                        <!-- JS에서 동적 렌더링: 4,4,4,3,3,2 구조 -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- 칭찬 스티커 (남친용) 뷰 - 푸른색 계열 -->
+            <section id="view-sticker-male" class="view-section bg-gradient-to-b from-[#e0f2fe] via-[#bae6fd] to-[#93c5fd]/40 h-full overflow-y-auto">
+                <div class="sticky top-0 bg-pastel-blue/90 backdrop-blur z-20 p-4 border-b border-blue-200 shadow-sm flex justify-between items-end">
+                    <div>
+                        <h2 class="font-jua text-2xl text-blue-600"><i class="fas fa-medal mr-2"></i>칭찬 스티커 (남친용)</h2>
+                        <p class="text-[11px] text-blue-500 font-bold mt-1 tracking-tight">남자친구가 착한 일을 하면 스티커를 붙여주세요♡</p>
+                    </div>
+                    <div class="bg-white px-3 py-1 rounded-full shadow-sm text-blue-500 font-bold text-xs border border-blue-100">
+                        <span id="sticker-male-count-display">0</span> / 20
+                    </div>
+                </div>
+                
+                <div class="p-4 pb-24 flex justify-center">
+                    <!-- 포도송이 레이아웃 컨테이너 (남친용) -->
+                    <div class="flex flex-col items-center gap-3 mt-4 bg-white/35 backdrop-blur-sm px-6 py-7 rounded-[36px] border border-white/60 shadow-lg" id="sticker-male-grape-container">
                         <!-- JS에서 동적 렌더링: 4,4,4,3,3,2 구조 -->
                     </div>
                 </div>
@@ -409,7 +483,7 @@
                     <div class="flex justify-between items-center mb-3">
                         <h2 class="font-jua text-2xl text-deep-purple"><i class="fas fa-list-check mr-2"></i>버킷리스트</h2>
                         <button id="btn-show-add-bucket" class="bg-deep-purple text-white text-xs font-bold px-3 py-2 rounded-full shadow-md hover:bg-purple-600 active:scale-95 transition-all">
-                            <i class="fas fa-plus mr-1"></i>신규 추가
+                            <i class="fas fa-plus mr-1"></i>신규 버킷리스트 추가
                         </button>
                     </div>
                     <!-- 에너지바 -->
@@ -541,7 +615,8 @@
         
         let currentPostsList = [];  
         let currentPhotosList = []; 
-        let currentStickers = {};
+        let currentStickersFemale = {}; // 여친용 칭찬스티커 데이터
+        let currentStickersMale = {};   // 남친용 칭찬스티커 데이터
         let currentBuckets = [];
 
         let unsubscribes = [];
@@ -549,6 +624,7 @@
         let currentBucketModalId = null;
         let editTargetPostId = null;
         let stickerTargetSlot = null;
+        let stickerTargetBoard = null; // 'female' | 'male'
         
         let lastViewedTextBoard = 0;
         const EMOJIS = ['❤️', '🍔', '✈️', '🎮', '🏕️', '🎬', '🛍️', '🎤', '☕', '🎡', '🎂', '🥂', '📸', '🎵', '🏖️', '🎢', '🎨', '🚙', '💍', '🏡'];
@@ -559,7 +635,8 @@
         const settingsRef = ref(db, `${basePath}/settings/main`);
         const postsRef = ref(db, `${basePath}/posts`);
         const photosRef = ref(db, `${basePath}/photos`);
-        const stickersRef = ref(db, `${basePath}/stickers`);
+        const stickersFemaleRef = ref(db, `${basePath}/stickers_female`);
+        const stickersMaleRef = ref(db, `${basePath}/stickers`); // 기존 스티커 데이터 호환 유지
         const bucketsRef = ref(db, `${basePath}/buckets`);
 
         const UI = {
@@ -575,6 +652,26 @@
         };
 
         let selectedLoginRole = 'male'; 
+
+        // --- 3D 볼륨 하트 SVG 생성 헬퍼 ---
+        function get3DHeartSVG(isRed) {
+            const gradId = isRed ? 'grad-red-3d' : 'grad-pink-3d';
+            const cls = isRed ? 'heart-3d-red' : 'heart-3d-pink';
+            return `
+                <svg viewBox="0 0 100 100" class="${cls}">
+                    <!-- 메인 3D 볼륨 바디 -->
+                    <path d="M50 88 C50 88 10 62 10 34 C10 17 24 8 37 8 C45 8 50 15 50 15 C50 15 55 8 63 8 C76 8 90 17 90 34 C90 62 50 88 50 88 Z"
+                          fill="url(#${gradId})"
+                          stroke="url(#grad-rim-light)"
+                          stroke-width="1.5" />
+                    <!-- 좌측 상단 입체 하이라이트 광택 -->
+                    <ellipse cx="31" cy="24" rx="11" ry="6" transform="rotate(-28 31 24)" fill="white" fill-opacity="0.65" />
+                    <circle cx="22" cy="33" r="2.8" fill="white" fill-opacity="0.5" />
+                    <!-- 우측 상단 보조 하이라이트 -->
+                    <ellipse cx="66" cy="21" rx="6" ry="3" transform="rotate(-15 66 21)" fill="white" fill-opacity="0.35" />
+                </svg>
+            `;
+        }
 
         // --- 유틸리티 ---
         const Utils = {
@@ -600,7 +697,6 @@
 
                 const close = () => { modal.classList.add('hidden'); confetti.classList.add('hidden'); };
                 
-                // 이벤트 리스너 중복 방지
                 btnConfirm.onclick = () => { close(); if(onConfirm) onConfirm(); };
                 btnCancel.onclick = () => close();
             },
@@ -793,11 +889,19 @@
                 })
             );
 
-            // 칭찬스티커 구독
+            // 칭찬스티커 (여친용) 구독
             unsubscribes.push(
-                onValue(stickersRef, (snapshot) => {
-                    currentStickers = snapshot.val() || {};
-                    renderStickers();
+                onValue(stickersFemaleRef, (snapshot) => {
+                    currentStickersFemale = snapshot.val() || {};
+                    renderStickerBoard('female');
+                })
+            );
+
+            // 칭찬스티커 (남친용) 구독
+            unsubscribes.push(
+                onValue(stickersMaleRef, (snapshot) => {
+                    currentStickersMale = snapshot.val() || {};
+                    renderStickerBoard('male');
                 })
             );
 
@@ -877,40 +981,49 @@
             });
         };
 
-        // --- 칭찬스티커 로직 ---
-        function renderStickers() {
-            const container = document.getElementById('sticker-grape-container');
+        // --- 칭찬스티커 (여친용 / 남친용) 공통 렌더링 및 로직 ---
+        function renderStickerBoard(boardType) {
+            const isFemaleBoard = (boardType === 'female');
+            const stickersData = isFemaleBoard ? currentStickersFemale : currentStickersMale;
+            const container = document.getElementById(isFemaleBoard ? 'sticker-female-grape-container' : 'sticker-male-grape-container');
+            const countDisplay = document.getElementById(isFemaleBoard ? 'sticker-female-count-display' : 'sticker-male-count-display');
+            if(!container || !countDisplay) return;
+
             container.innerHTML = '';
             
             let filledCount = 0;
-            for(let i=1; i<=20; i++) { if(currentStickers[i]) filledCount++; }
-            document.getElementById('sticker-count-display').innerText = filledCount;
+            for(let i=1; i<=20; i++) { if(stickersData[i]) filledCount++; }
+            countDisplay.innerText = filledCount;
 
             // 포도송이 레이아웃: [4, 4, 4, 3, 3, 2] = 20개
             const layout = [4, 4, 4, 3, 3, 2];
             let stickerIndex = 1;
 
             layout.forEach(rowSize => {
-                let rowHtml = `<div class="flex gap-2 justify-center">`;
+                let rowHtml = `<div class="flex gap-2.5 justify-center">`;
                 for(let i=0; i<rowSize; i++) {
                     const sNum = stickerIndex++;
                     const isRed = (sNum % 5 === 0);
-                    const filled = currentStickers[sNum];
+                    const filled = stickersData[sNum];
                     
                     if(filled) {
-                        const heartColor = isRed ? 'text-sticker-red' : 'text-deep-pink';
+                        // 부여된 칭찬스티커: 3차원 볼륨 하트 SVG 적용
                         rowHtml += `
-                            <div class="sticker-slot hover:scale-110 drop-shadow-md" onclick="showStickerReason(${sNum})">
-                                <i class="fas fa-heart ${heartColor} text-[45px]"></i>
+                            <div class="sticker-slot hover:scale-110" onclick="showStickerReason('${boardType}', ${sNum})">
+                                ${get3DHeartSVG(isRed)}
                                 <span class="sticker-num">${sNum}</span>
                             </div>
                         `;
                     } else {
-                        // 빈 슬롯 (클릭 시 붙이기)
+                        // 빈 슬롯: 베이스 하트 이미지 그대로 유지
+                        const baseIconShadow = isFemaleBoard
+                            ? 'text-white/90 drop-shadow-[0_2px_4px_rgba(255,143,171,0.45)]'
+                            : 'text-white/90 drop-shadow-[0_2px_4px_rgba(96,165,250,0.45)]';
+                        const baseNumColor = isFemaleBoard ? 'text-deep-pink/70' : 'text-blue-400/80';
                         rowHtml += `
-                            <div class="sticker-slot hover:scale-110" onclick="attemptAddSticker(${sNum})">
-                                <i class="far fa-heart text-white/70 text-[40px] drop-shadow-sm"></i>
-                                <span class="sticker-num text-white/50">${sNum}</span>
+                            <div class="sticker-slot hover:scale-110" onclick="attemptAddSticker('${boardType}', ${sNum})">
+                                <i class="far fa-heart ${baseIconShadow} text-[40px]"></i>
+                                <span class="sticker-num ${baseNumColor}" style="text-shadow:none;">${sNum}</span>
                             </div>
                         `;
                     }
@@ -920,36 +1033,72 @@
             });
         }
 
-        window.showStickerReason = (num) => {
-            const sticker = currentStickers[num];
+        window.showStickerReason = (boardType, num) => {
+            const stickersData = (boardType === 'female') ? currentStickersFemale : currentStickersMale;
+            const sticker = stickersData[num];
             if(sticker) {
                 Utils.showModal(`✨ ${num}번째 칭찬`, sticker.reason);
             }
         };
 
-        window.attemptAddSticker = (targetNum) => {
+        window.attemptAddSticker = (boardType, targetNum) => {
+            const isFemaleBoard = (boardType === 'female');
+            const stickersData = isFemaleBoard ? currentStickersFemale : currentStickersMale;
+
             // 순서대로 붙이도록 강제
             for(let i=1; i<targetNum; i++) {
-                if(!currentStickers[i]) {
+                if(!stickersData[i]) {
                     Utils.showModal("알림", `${i}번째 스티커부터 먼저 채워주세요!`);
                     return;
                 }
             }
-            if(currentRole !== 'female') {
-                Utils.showModal("알림", "여자친구만 스티커를 붙여줄 수 있습니다 ♡");
+
+            // 여친용 칭찬스티커는 남자친구가, 남친용 칭찬스티커는 여자친구가 부여
+            const requiredGiverRole = isFemaleBoard ? 'male' : 'female';
+            const requiredGiverLabel = isFemaleBoard ? '남자친구' : '여자친구';
+
+            if(currentRole !== requiredGiverRole) {
+                Utils.showModal("알림", `${requiredGiverLabel}만 스티커를 붙여줄 수 있습니다 ♡`);
                 return;
             }
 
+            stickerTargetBoard = boardType;
             stickerTargetSlot = targetNum;
-            document.getElementById('sticker-auth-pass').value = '';
-            document.getElementById('sticker-input-reason').value = '';
+
+            // 모달 테마 및 안내 문구 설정
+            const modalTitle = document.getElementById('sticker-modal-title');
+            const modalDesc = document.getElementById('sticker-modal-desc');
+            const btnVerify = document.getElementById('btn-sticker-verify');
+            const authInput = document.getElementById('sticker-auth-pass');
+            const reasonInput = document.getElementById('sticker-input-reason');
+
+            modalDesc.innerText = `${requiredGiverLabel}만 스티커를 붙여줄 수 있어요!`;
+
+            if(isFemaleBoard) {
+                modalTitle.className = "text-xl font-jua text-deep-pink mb-2";
+                btnVerify.className = "px-4 py-2 rounded-xl bg-deep-pink text-white font-bold w-1/2 shadow-md";
+                authInput.className = "mb-4 text-center border-pink-200 focus:border-deep-pink";
+                reasonInput.className = "mb-4 text-center border-pink-200 focus:border-deep-pink text-sm";
+            } else {
+                modalTitle.className = "text-xl font-jua text-blue-500 mb-2";
+                btnVerify.className = "px-4 py-2 rounded-xl bg-blue-500 text-white font-bold w-1/2 shadow-md";
+                authInput.className = "mb-4 text-center border-blue-200 focus:border-blue-400";
+                reasonInput.className = "mb-4 text-center border-blue-200 focus:border-blue-400 text-sm";
+            }
+
+            authInput.value = '';
+            reasonInput.value = '';
             document.getElementById('sticker-step-auth').classList.remove('hidden');
             document.getElementById('sticker-step-reason').classList.add('hidden');
             document.getElementById('sticker-action-modal').classList.remove('hidden');
         };
 
         document.querySelectorAll('.btn-sticker-cancel').forEach(btn => {
-            btn.onclick = () => { document.getElementById('sticker-action-modal').classList.add('hidden'); stickerTargetSlot = null; };
+            btn.onclick = () => {
+                document.getElementById('sticker-action-modal').classList.add('hidden');
+                stickerTargetSlot = null;
+                stickerTargetBoard = null;
+            };
         });
 
         document.getElementById('btn-sticker-verify').onclick = () => {
@@ -968,18 +1117,24 @@
             if(!reason) return Utils.showModal("알림", "칭찬 이유를 적어주세요!");
             
             const slot = stickerTargetSlot;
+            const boardType = stickerTargetBoard;
+            const isFemaleBoard = (boardType === 'female');
+            const receiverLabel = isFemaleBoard ? '여자친구' : '남자친구';
+            const dbSubPath = isFemaleBoard ? 'stickers_female' : 'stickers';
+
             try {
-                await set(ref(db, `${basePath}/stickers/${slot}`), { reason: reason, timestamp: Date.now() });
+                await set(ref(db, `${basePath}/${dbSubPath}/${slot}`), { reason: reason, timestamp: Date.now() });
                 document.getElementById('sticker-action-modal').classList.add('hidden');
                 
-                // 달성 축하 팝업
+                // 5개 단위 및 20개 최종 달성 축하 팝업
                 if(slot === 20) {
-                    setTimeout(() => Utils.showModal("🎉 칭찬스티커 최종 완성! 🎉", "당신의 사랑스러운 남자친구에게\n진심을 다한 마음을 표현해 주세요!", false, null, true), 300);
+                    setTimeout(() => Utils.showModal("🎉 칭찬스티커 최종 완성 🎉", `당신의 사랑스러운 ${receiverLabel}에게\n진심을 다한 마음을 표현해 주세요!`, false, null, true), 300);
                 } else if(slot % 5 === 0) {
-                    setTimeout(() => Utils.showModal("🎁 소원 단위 달성!", "남자친구의 작은 소원을 들어주세요 ♡", false, null, true), 300);
+                    setTimeout(() => Utils.showModal("🎁 칭찬스티커 소원 단위 달성", `${receiverLabel}의 작은 소원을 들어주세요 ♡`, false, null, true), 300);
                 }
                 
                 stickerTargetSlot = null;
+                stickerTargetBoard = null;
             } catch(e) {
                 Utils.showModal("오류", "저장에 실패했습니다.");
             }
@@ -994,8 +1149,8 @@
             const total = currentBuckets.length;
             const achievedCount = currentBuckets.filter(b => b.isAchieved).length;
             
-            // 에너지바 업데이트
-            let percent = total === 0 ? 0 : Math.round((achievedCount / 100) * 100); 
+            // 에너지바 업데이트 (1개 달성 시마다 1% 상승, 100개 달성 시 100%)
+            let percent = achievedCount; 
             if(percent > 100) percent = 100;
             document.getElementById('bucket-energy-bar').style.width = `${percent}%`;
             document.getElementById('bucket-energy-text').innerText = `애정도 ${percent}%`;
@@ -1006,7 +1161,6 @@
             }
 
             currentBuckets.forEach(bucket => {
-                // 달성 완료 시 썸네일에 스티커 뱃지 표시
                 const badgeHtml = bucket.isAchieved ? `<div class="absolute top-2 right-2 bg-deep-pink text-white text-[10px] font-jua px-2 py-1 rounded-full shadow-md z-10 transform rotate-12 border border-white">달성 완료</div>` : '';
                 const opacityClass = bucket.isAchieved ? 'opacity-80' : '';
                 
@@ -1039,7 +1193,7 @@
             };
             emojiSelector.appendChild(btn);
         });
-        emojiSelector.children[0].click(); // 첫번째 기본 선택
+        emojiSelector.children[0].click();
 
         document.getElementById('btn-show-add-bucket').onclick = () => {
             if(currentBuckets.length >= 100) {
@@ -1085,7 +1239,6 @@
             document.getElementById('bucket-detail-emoji').innerText = bucket.emoticon;
             document.getElementById('bucket-detail-title').innerText = bucket.title;
             
-            // 사진 처리
             const photoEl = document.getElementById('bucket-detail-photo');
             const placeholderEl = document.getElementById('bucket-photo-placeholder');
             if(bucket.photo) {
@@ -1094,7 +1247,6 @@
                 photoEl.classList.add('hidden'); placeholderEl.classList.remove('hidden');
             }
 
-            // 달성 버튼/뱃지 처리
             const btnAchieve = document.getElementById('btn-bucket-achieve');
             const badge = document.getElementById('bucket-detail-badge');
             if(bucket.isAchieved) {
@@ -1109,7 +1261,6 @@
                 btnAchieve.classList.replace('border-gray-300', 'border-deep-purple');
             }
 
-            // 댓글 렌더링
             const commentsContainer = document.getElementById('bucket-detail-comments');
             commentsContainer.innerHTML = '';
             if(!bucket.comments || bucket.comments.length === 0) {
@@ -1135,7 +1286,6 @@
             }
         }
 
-        // 달성 상태 변경 로직
         document.getElementById('btn-bucket-achieve').onclick = async () => {
             if(!currentBucketModalId) return;
             const bucket = currentBuckets.find(b => b.id === currentBucketModalId);
@@ -1143,7 +1293,6 @@
             Utils.showModal("확인", msg, true, async () => {
                 try {
                     await update(ref(db, `${basePath}/buckets/${currentBucketModalId}`), { isAchieved: !bucket.isAchieved });
-                    // 업데이트 성공 시 디테일 창 자동으로 닫기
                     document.getElementById('bucket-detail-modal').classList.add('hidden');
                     currentBucketModalId = null;
                 } catch (e) {
@@ -1152,7 +1301,6 @@
             });
         };
 
-        // 버킷리스트 삭제 로직
         document.getElementById('btn-bucket-delete').onclick = () => {
             if(!currentBucketModalId) return;
             Utils.showModal("삭제", "이 버킷리스트를 정말 삭제할까요?", true, async () => {
@@ -1495,6 +1643,25 @@
             else document.getElementById('setting-profile-pic').src = "https://placehold.co/150x150/ffb3c6/ffffff?text=♡";
             if (coupleData.dday) document.getElementById('setting-dday').value = coupleData.dday;
         }
+
+        document.getElementById('input-profile-pic').onchange = (e) => {
+            const file = e.target.files[0];
+            if(!file) return;
+            Utils.showModal("업로드 중", "프로필 사진을 변경하고 있습니다...");
+            Utils.resizeImage(file, 400, 0.8, async (base64) => {
+                try {
+                    let updateData = {};
+                    updateData[`${currentRole}/profilePic`] = base64;
+                    await update(usersRef, updateData);
+                    currentUserData.profilePic = base64;
+                    document.getElementById('setting-profile-pic').src = base64;
+                    updateSidebarProfile();
+                    document.getElementById('custom-modal').classList.add('hidden');
+                } catch(err) {
+                    Utils.showModal("오류", "프로필 사진 변경에 실패했습니다.");
+                }
+            });
+        };
 
         document.getElementById('btn-save-my-info').onclick = async () => {
             const newNick = document.getElementById('setting-nickname').value.trim();
